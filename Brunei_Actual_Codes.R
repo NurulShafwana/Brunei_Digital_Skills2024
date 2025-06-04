@@ -287,11 +287,11 @@ bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$C3==1 & 
 
 
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
-                                       levels = c(1,2,3,9),                      
+                                       levels = c(1,2,3),                      
                                        labels =  c('At least basic level of skills',
                                                    'Skills in 3 of 4 areas',
-                                                   'Skills in 0-2 out of 4 areas',
-                                                   'No internet use (last 3 months)'),
+                                                   'Skills in 0-2 out of 4 areas'
+                                                   ),
                                        ordered = T)
 #table(bruneidesign_ind24$variables$Skill)
 
