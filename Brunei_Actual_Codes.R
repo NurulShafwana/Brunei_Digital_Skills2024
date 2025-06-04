@@ -65,13 +65,18 @@ design_ind21$variables$IDC<-design_ind21$variables$IDC1+
 ## 3. Seeking health information	                                      IDL3
 ## 4. Verifying the reliability of information found online	            IDL4
 
-design_ind21$variables$IDL2 <- ifelse(design_ind21$variables$C8_A == 1, 1, 0)
-design_ind21$variables$IDL3 <- ifelse(design_ind21$variables$C9_D == 1, 1, 0)
-design_ind21$variables$IDL4 <- ifelse(design_ind21$variables$C8_B == 1, 1, 0)
+bruneidesign_ind24$variables$IDL1 <- ifelse(bruneidesign_ind24$variables$IDL1 == 1, 1, 0)
+bruneidesign_ind24$variables$IDL2 <- ifelse(bruneidesign_ind24$variables$IDL2 == 1, 1, 0)
+bruneidesign_ind24$variables$IDL3 <- ifelse(bruneidesign_ind24$variables$IDL3 == 1, 1, 0)
+bruneidesign_ind24$variables$IDL4 <- ifelse(bruneidesign_ind24$variables$IDL4 == 1, 1, 0)
 
-design_ind21$variables$IDL <- design_ind21$variables$IDL2 +
-  design_ind21$variables$IDL3 +
-  design_ind21$variables$IDL4
+bruneidesign_ind24$variables$IDL <- bruneidesign_ind24$variables$IDL1 +
+  bruneidesign_ind24$variables$IDL2 +
+  bruneidesign_ind24$variables$IDL3 +
+  bruneidesign_ind24$variables$IDL4
+
+table(bruneidesign_ind24$variables$IDL)
+
 
 # The above code basically means that :
 
@@ -514,6 +519,9 @@ a %>%
 
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
+
+#Include gender here, dont be sexist
+
 design_ind21$variables$PEA_2 <- factor(design_ind21$variables$PEA_2,
                                        levels = c(1,2),                      
                                        labels =  c('In the workforce',
