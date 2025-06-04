@@ -256,19 +256,19 @@ bruneidesign_ind24$variables$AIndex_SFY <- factor(bruneidesign_ind24$variables$A
 
 # Labelling classes FOR THE WHOLE DIGITAL SKILLS
 bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
-                                      AIndex_IDL='Information and data literacy',
-                                      AIndex_CC='Communication and collaboration',
-                                      AIndex_DCC='Digital content creation',
-                                      AIndex_PS='Problem solving',
-                                      AIndex_SFY="Safety")
+                                            AIndex_CC='Communication and collaboration',
+                                            AIndex_DCC='Digital content creation',
+                                            AIndex_IDL='Information & data literacy',
+                                            AIndex_PS='Problem solving',
+                                            AIndex_SFY="Safety")
 
 
 # Frequency tables for each class
-svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_CC,bruneidesign_ind24)
 svymean(~AIndex_DCC,bruneidesign_ind24)
+svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_PS,bruneidesign_ind24)
-svymean(~AIndex_SFY, bruneidesign_ind24)
+svymean(~AIndex_SFY,bruneidesign_ind24)
 
 
 # ### Calculating an overall skill level ### #
