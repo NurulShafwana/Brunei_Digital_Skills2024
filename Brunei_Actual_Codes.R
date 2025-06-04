@@ -152,12 +152,12 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
 ## 2 'Above basic'         ===>       Two or more activities
 ## 9 'Not applicable'      ===>       Not an Internet user
 
-#| #Internet Use (`C3`) | Digital Activities (`IDL2 + IDL3 + IDL4`) | `AIndex_IDL` Value | Meaning                                   |
-#| #------------------- | ----------------------------------------- | ------------------ | ----------------------------------------- |
-#  | Yes (1)             | 0                                         | 0                  | Used internet, but **no digital skills**  |
-#  | Yes (1)             | 1                                         | 1                  | Used internet, with **1 digital skill**   |
-#  | Yes (1)             | 2 or 3                                    | 2                  | Used internet, with **2+ digital skills** |
-#  | No (not 1)          | (any)                                     | 9                  | **Did not use internet**                  |
+#  | Digital Activities (`IDL2 + IDL3 + IDL4`) | `AIndex_IDL` Value | Meaning                                   |
+#  | ----------------------------------------- | ------------------ | ----------------------------------------- |
+#  | 0                                         | 0                  | Used internet, but **no digital skills**  |
+#  | 1                                         | 1                  | Used internet, with **1 digital skill**   |
+#  | 2 or 3                                    | 2                  | Used internet, with **2+ digital skills** |
+#  | (any)                                     | 9                  | **Did not use internet**                  |
 
 
 ### A. CC - Communication and collaboration
