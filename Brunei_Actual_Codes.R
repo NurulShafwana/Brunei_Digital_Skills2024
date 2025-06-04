@@ -330,6 +330,7 @@ ggplot2::theme_set(theme_bw() +
 )
 
 # Generating charts for each skill class
+## b for CC
 b %>% 
   ggplot(aes(x = '', y = mean, fill = labels_cat)) +
   geom_bar(stat="identity", width=1, color="white") +
@@ -340,9 +341,10 @@ b %>%
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_viridis_d() +
-  labs(title = "Digital literacy",
+  labs(title = "Communication & Collaboration",
        fill  = 'Skill level') 
 
+## c is for DCC
 c %>% 
   ggplot(aes(x = '', y = mean, fill = labels_cat)) +
   geom_bar(stat="identity", width=1, color="white") +
@@ -353,9 +355,10 @@ c %>%
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_viridis_d() +
-  labs(title = "Communication and collaboration",
+  labs(title = "Digital Content Creation",
        fill  = 'Skill level')
 
+## d is for IDL
 d %>% 
   ggplot(aes(x = '', y = mean, fill = labels_cat)) +
   geom_bar(stat="identity", width=1, color="white") +
@@ -366,9 +369,10 @@ d %>%
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) + 
   scale_fill_viridis_d() +
-  labs(title = "Digital content creation",
+  labs(title = "Information and Data Literacy",
        fill  = 'Skill level')
 
+## e is for PS
 e %>% 
   ggplot(aes(x = '', y = mean, fill = labels_cat)) +
   geom_bar(stat="identity", width=1, color="white") +
@@ -380,6 +384,20 @@ e %>%
   scale_y_continuous(labels = scales::percent) + 
   scale_fill_viridis_d() +
   labs(title = "Problem solving",
+       fill  = 'Skill level')
+
+## f is for SFY
+f %>% 
+  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
+  geom_bar(stat="identity", width=1, color="white") +
+  coord_polar('y', start = 0) +
+  geom_label(aes(label = mean,
+                 group = factor(labels_cat)),
+             fill = "white", colour = "black", 
+             position= position_fill(vjust = .5)) +
+  scale_y_continuous(labels = scales::percent) + 
+  scale_fill_viridis_d() +
+  labs(title = "Safety",
        fill  = 'Skill level')
 
 # Generating survey mean objects for overall skill indicator
