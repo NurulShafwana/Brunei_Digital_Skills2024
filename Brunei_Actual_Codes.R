@@ -279,11 +279,10 @@ bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[, c("A
                                              function(x) length(which(x=="None")))
 #table(bruneidesign_ind24$variables$auxskill)
 
-bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==0,1,
-                                     ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==1,2,
-                                            ifelse((bruneidesign_ind24$variables$C3==1 & (bruneidesign_ind24$variables$auxskill>1)),3,
-                                                   ifelse(bruneidesign_ind24$variables$C3!=1,9,0))))
-
+bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$auxskill==0,1,
+                                           ifelse(bruneidesign_ind24$variables$auxskill==1,2,
+                                                  ifelse(((bruneidesign_ind24$variables$auxskill>1)),3,0
+                                                  )))
 
 
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
