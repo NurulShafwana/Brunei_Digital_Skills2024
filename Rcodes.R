@@ -17,7 +17,7 @@ mydata <- read_excel("Brunei Digital Skills 2024.xlsx")
 head(mydata)
 
 # Removing one row from the excel data frame
-mydata <- mydata[-1, ]
+mydata <- mydata[-1, -4]
 
 
 # Creating survey design using the data
