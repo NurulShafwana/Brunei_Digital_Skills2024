@@ -75,32 +75,8 @@ bruneidesign_ind24$variables$IDL <- bruneidesign_ind24$variables$IDL1 +
   bruneidesign_ind24$variables$IDL3 +
   bruneidesign_ind24$variables$IDL4
 
+#to check
 table(bruneidesign_ind24$variables$IDL)
-
-
-# The above code basically means that :
-
-"Give a score of 1 to someone if they used the internet (C3) 
-AND used it to get information about goods or services (C8_A). 
-Otherwise, give them a 0"
-
-#ifelse(condition, value_if_true, value_if_false)
-
-#C8_A == 1: This is the condition being checked.
-
-#1: This is the value returned if the condition is true.
-
-#0: This is the value returned if the condition is false.
-
-#In C8_A, the Brazilians used the following as options for respondents: 
-
-# value label
-# 0 No
-# 1 Yes
-# 97 Undecided
-# 98 No answer
-# 99 Not applicable
-
 
 
 # D. Problem Solving
@@ -150,20 +126,6 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
 #===============================================================================
 # Calculating the Skills by areas
 #-------------------------------------------------------------------------------
-
-# Areas are defined as classes, summing the amount of activities an individual executed
-## 0 'None'                ===>       No activity 
-## 1 'Basic'               ===>       At least one activity
-## 2 'Above basic'         ===>       Two or more activities
-## 9 'Not applicable'      ===>       Not an Internet user
-
-#  | Digital Activities (`IDL2 + IDL3 + IDL4`) | `AIndex_IDL` Value | Meaning                                   |
-#  | ----------------------------------------- | ------------------ | ----------------------------------------- |
-#  | 0                                         | 0                  | Used internet, but **no digital skills**  |
-#  | 1                                         | 1                  | Used internet, with **1 digital skill**   |
-#  | 2 or 3                                    | 2                  | Used internet, with **2+ digital skills** |
-#  | (any)                                     | 9                  | **Did not use internet**                  |
-
 
 ### A. CC - Communication and collaboration
 design_ind21$variables$AIndex_ICC<-ifelse((design_ind21$variables$ICC2+
@@ -308,10 +270,6 @@ design_ind21$variables<- apply_labels(design_ind21$variables,
                                       AIndex_IPL='Problem solving',
                                       AIndex_SFY="Safety")
 
-#"Give friendly names to these skill index variables, 
-#so reports, tables, and summaries show clear labels 
-#instead of cryptic variable codes."
-
 
 # Frequency tables for each class
 svymean(~AIndex_IDL,design_ind21)
@@ -320,17 +278,6 @@ svymean(~AIndex_IDC,design_ind21)
 svymean(~AIndex_IPL,design_ind21)
 svymean(~AIndex_SFY, bruneidesign_ind24)
 
-#Each line calculates the survey-weighted mean (average) of a specific digital skills index 
-#using your survey design object (design_ind21).
-
-#svymean() does the following: 
-
-#Computes weighted averages, 
-#taking into account sampling design 
-#(weights, strata, clusters, etc.).
-
-#In this case, it’s computing the average skill level 
-#(0 = None, 1 = Basic, 2 = Above Basic, etc.) for each skill domain.
 
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
@@ -338,38 +285,12 @@ svymean(~AIndex_SFY, bruneidesign_ind24)
 design_ind21$variables$auxskill<-apply(design_ind21$variables[269:272],1,function(x) length(which(x=="None")))
 #table(design_ind21$variables$auxskill)
 
-#design_ind21$variables[269:272]
-# 👉 Selects columns 269 to 272 in your dataset — these are assumed to be digital skill levels like AIndex_IDL, AIndex_ICC, etc.
-# 
-# apply(..., 1, ...)
-# 👉 Tells R to apply a function row by row (because 1 means rows).
-# 
-# function(x) length(which(x == "None"))
-# 👉 For each row, it looks at the values in columns 269–272 and counts how many of them are equal to "None".
-# 
-# design_ind21$variables$auxskill <-
-#   👉 Saves the count of "None" values as a new column called auxskill
-
-# Classifying skills for Brazil pilot
-# As there was one less area collected, we went for a three classification scale for the overall skill:
-# At least basic level of skills  => the respondent executes at least one activity in all the areas
-# Skills in 3 of 4 areas          => the respondent executes at least one activity in 3 of the 4 areas
-# Skills in 0 to 2 out of 4 areas => the respondent executes activities in 1 or 2 of the 4 areas 
-#                                    or do not execute any of the listed activities, but is a Internet user
 
 design_ind21$variables$Skill<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$auxskill==0,1,
                                      ifelse(design_ind21$variables$C3==1 & design_ind21$variables$auxskill==1,2,
                                             ifelse((design_ind21$variables$C3==1 & (design_ind21$variables$auxskill>1)),3,
                                                    ifelse(design_ind21$variables$C3!=1,9,0))))
 
-#The code above can be explained as below: 
-
-# | Condition                                             | Code Output | Meaning (after labeling)            |
-#   | ----------------------------------------------------- | ----------- | ----------------------------------- |
-#   | Internet user (`C3==1`) with **0 "None"** skill areas | `1`         | **At least basic level of skills**  |
-#   | Internet user with **1 "None"** skill area            | `2`         | **Skills in 3 of 4 areas**          |
-#   | Internet user with **2+ "None"** skill areas          | `3`         | **Skills in 0-2 out of 4 areas**    |
-#   | Not an internet user (`C3 != 1`)                      | `9`         | **No internet use (last 3 months)** |
 
 
 design_ind21$variables$Skill <- factor(design_ind21$variables$Skill,
@@ -403,28 +324,6 @@ d <- as_tibble(d) %>%
 e <- as_tibble(e) %>% 
   mutate(labels_cat = substring(names(e), 11),
          mean = formattable::percent(mean, digits = 1))
-
-# as_tibble(b):
-# Converts the object b (which is a matrix or data frame of survey means) into a tibble — a modern, cleaner format for tables from the tidyverse.
-# 
-# substring(names(b), 11):
-# Extracts the label name from the column names by removing the first 10 characters.
-# Example:
-#   
-#   If a column name is "AIndex_IDLAbove basic", this would extract just "Above basic".
-# 
-# This helps clean up the factor level labels from the svymean output.
-# 
-# formattable::percent(mean, digits = 1): 
-# Converts the mean values (like 0.42) into percentage format with 1 decimal place (e.g., "42.0%").
-
-# | mean  | SE    | labels\_cat                     |
-#   | ----- | ----- | ------------------------------- |
-#   | 15.0% | 0.01  | None                            |
-#   | 40.0% | 0.02  | Basic                           |
-#   | 30.0% | 0.015 | Above basic                     |
-#   | 15.0% | 0.01  | No internet use (last 3 months) |
-
 
 ggplot2::theme_set(theme_bw() +
                      theme(axis.text.x=element_blank(),
@@ -530,16 +429,6 @@ design_ind21$variables$PEA_2 <- factor(design_ind21$variables$PEA_2,
 design_ind21$variables<- apply_labels(design_ind21$variables,
                                       PEA_2='Workforce status')
 
-# The code above can be explained as below:
-#   
-#  It Converts PEA_2 (likely a numeric variable like 1 or 2) into an ordered factor.
-# 
-# Assigns human-readable labels:
-#   
-#   1 becomes "In the workforce"
-# 
-#   2 becomes "Out of workforce"
-
 
 # Getting mean of overall skill indicator by workforce condition
 f <- svyby(~Skill,~PEA_2, design_ind21, svymean) %>% 
@@ -555,15 +444,6 @@ f <- svyby(~Skill,~PEA_2, design_ind21, svymean) %>%
                                       'No internet use (last 3 months)'),
                           ordered = T),
          values = formattable::percent(values, 1))
-
-# The codes above can be seen as: 
-#   
-#   | Workforce Group      | Skill Level                     | % of People |
-#   | -------------------- | ------------------------------- | ----------- |
-#   | In the workforce     | At least basic skills           | 45.1%       |
-#   | In the workforce     | Skills in 3 of 4 areas          | 33.2%       |
-#   | Out of the workforce | Skills in 0–2 out of 4 areas    | 12.5%       |
-#   | Out of the workforce | No internet use (last 3 months) | 9.2%        |
 
 
 f %>% 
