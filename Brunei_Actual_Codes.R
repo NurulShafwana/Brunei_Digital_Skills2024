@@ -128,6 +128,9 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
 #Each is 1 if yes, 0 if no.
 #You also have C3, which likely means: "Did the person use the internet?" (1 = yes)
 
+
+
+
 #===============================================================================
 # Calculating the Skills by areas
 #-------------------------------------------------------------------------------
@@ -138,26 +141,6 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
 ## 2 'Above basic'         ===>       Two or more activities
 ## 9 'Not applicable'      ===>       Not an Internet user
 
-# A. Information and data literacy
-design_ind21$variables$AIndex_IDL<-ifelse((design_ind21$variables$IDL2+
-                                             design_ind21$variables$IDL3+
-                                             design_ind21$variables$IDL4)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$IDL2+
-                                                    design_ind21$variables$IDL3+
-                                                    design_ind21$variables$IDL4)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$IDL2+
-                                                           design_ind21$variables$IDL3+
-                                                           design_ind21$variables$IDL4)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
-
-#“If a person used the internet (C3 == 1), score their digital skill level based on 
-#how many online activities they did:
-
-#0 skills = 0,
-#1 skill = 1,
-#2 or more = 2.
-#If they didn’t use the internet at all, assign 9.”
-
 #| #Internet Use (`C3`) | Digital Activities (`IDL2 + IDL3 + IDL4`) | `AIndex_IDL` Value | Meaning                                   |
 #| #------------------- | ----------------------------------------- | ------------------ | ----------------------------------------- |
 #  | Yes (1)             | 0                                         | 0                  | Used internet, but **no digital skills**  |
@@ -166,27 +149,7 @@ design_ind21$variables$AIndex_IDL<-ifelse((design_ind21$variables$IDL2+
 #  | No (not 1)          | (any)                                     | 9                  | **Did not use internet**                  |
 
 
-# Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_IDL <- factor(design_ind21$variables$AIndex_IDL,
-                                            levels = c(0,1,2,9),                      
-                                            labels =  c('None',
-                                                        'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
-                                            ordered = T)
-
-#The codes above are converting AIndex_IDL into an ordered factor, with custom labels for each score.
-
-#The table below is showing what is happening in the code above
-
-#| #Original Score | Label Assigned                      | Skill Meaning                               |
-#| #-------------- | ----------------------------------- | ------------------------------------------- |
-#  | `0`            | `'None'`                            | Used internet, but did **no digital tasks** |
-#  | `1`            | `'Basic'`                           | Did **1 digital task**                      |
-#  | `2`            | `'Above basic'`                     | Did **2 or more digital tasks**             |
-#  | `9`            | `'No internet use (last 3 months)'` | Didn't use internet                         |
-
-# B. Communication and collaboration
+### A. CC - Communication and collaboration
 design_ind21$variables$AIndex_ICC<-ifelse((design_ind21$variables$ICC2+
                                              design_ind21$variables$ICC3+
                                              design_ind21$variables$ICC4+
@@ -210,7 +173,7 @@ design_ind21$variables$AIndex_ICC <- factor(design_ind21$variables$AIndex_ICC,
                                                         'No internet use (last 3 months)'),
                                             ordered = T)
 
-# C. Digital content creation
+### B. DCC - Digital content creation
 design_ind21$variables$AIndex_IDC<-ifelse((design_ind21$variables$IDC2+
                                              design_ind21$variables$IDC3+
                                              design_ind21$variables$IDC4+
@@ -240,7 +203,28 @@ design_ind21$variables$AIndex_IDC <- factor(design_ind21$variables$AIndex_IDC,
                                                         'No internet use (last 3 months)'),
                                             ordered = T)
 
-# D. Problem solving
+# C. IDL - Information and data literacy
+design_ind21$variables$AIndex_IDL<-ifelse((design_ind21$variables$IDL2+
+                                             design_ind21$variables$IDL3+
+                                             design_ind21$variables$IDL4)==0 & design_ind21$variables$C3==1,0,
+                                          ifelse((design_ind21$variables$IDL2+
+                                                    design_ind21$variables$IDL3+
+                                                    design_ind21$variables$IDL4)==1 & design_ind21$variables$C3==1,1,
+                                                 ifelse((design_ind21$variables$IDL2+
+                                                           design_ind21$variables$IDL3+
+                                                           design_ind21$variables$IDL4)>1 & design_ind21$variables$C3==1,2,
+                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+
+# Factoring and labelling skills proeficiency 
+design_ind21$variables$AIndex_IDL <- factor(design_ind21$variables$AIndex_IDL,
+                                            levels = c(0,1,2,9),                      
+                                            labels =  c('None',
+                                                        'Basic',
+                                                        'Above basic',
+                                                        'No internet use (last 3 months)'),
+                                            ordered = T)
+
+### D. PS - Problem solving
 design_ind21$variables$AIndex_IPL<-ifelse((design_ind21$variables$IPL2+
                                              design_ind21$variables$IPL3+
                                              design_ind21$variables$IPL4+
@@ -270,12 +254,43 @@ design_ind21$variables$AIndex_IPL <- factor(design_ind21$variables$AIndex_IPL,
                                                         'No internet use (last 3 months)'),
                                             ordered = T)
 
-# Labelling classes
+### E. SFY - Safety
+design_ind21$variables$AIndex_IPL<-ifelse((design_ind21$variables$SFY2+
+                                             design_ind21$variables$SFY3+
+                                             design_ind21$variables$SFY4+
+                                             design_ind21$variables$SFY1+
+                                             design_ind21$variables$SFY5+
+                                             design_ind21$variables$SFY6)==0 & design_ind21$variables$C3==1,0,
+                                          ifelse((design_ind21$variables$IPL2+
+                                                    design_ind21$variables$IPL3+
+                                                    design_ind21$variables$IPL4+
+                                                    design_ind21$variables$IPL1+
+                                                    design_ind21$variables$IPL5+
+                                                    design_ind21$variables$IPL6)==1 & design_ind21$variables$C3==1,1,
+                                                 ifelse((design_ind21$variables$IPL2+
+                                                           design_ind21$variables$IPL3+
+                                                           design_ind21$variables$IPL4+
+                                                           design_ind21$variables$IPL1+
+                                                           design_ind21$variables$IPL5+
+                                                           design_ind21$variables$IPL6)>1 & design_ind21$variables$C3==1,2,
+                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+
+# Factoring and labelling skills proeficiency 
+design_ind21$variables$AIndex_IPL <- factor(design_ind21$variables$AIndex_IPL,
+                                            levels = c(0,1,2,9),                      
+                                            labels =  c('None',
+                                                        'Basic',
+                                                        'Above basic',
+                                                        'No internet use (last 3 months)'),
+                                            ordered = T)
+
+# Labelling classes FOR THE WHOLE DIGITAL SKILLS
 design_ind21$variables<- apply_labels(design_ind21$variables,
                                       AIndex_IDL='Information and data literacy',
                                       AIndex_ICC='Communication and collaboration',
                                       AIndex_IDC='Digital content creation',
-                                      AIndex_IPL='Problem solving')
+                                      AIndex_IPL='Problem solving',
+                                      AIndex_SFY="Safety")
 
 #"Give friendly names to these skill index variables, 
 #so reports, tables, and summaries show clear labels 
@@ -287,6 +302,7 @@ svymean(~AIndex_IDL,design_ind21)
 svymean(~AIndex_ICC,design_ind21)
 svymean(~AIndex_IDC,design_ind21)
 svymean(~AIndex_IPL,design_ind21)
+svymean(~AIndex_SFY, bruneidesign_ind24)
 
 #Each line calculates the survey-weighted mean (average) of a specific digital skills index 
 #using your survey design object (design_ind21).
@@ -300,7 +316,7 @@ svymean(~AIndex_IPL,design_ind21)
 #In this case, it’s computing the average skill level 
 #(0 = None, 1 = Basic, 2 = Above Basic, etc.) for each skill domain.
 
-# Calculating an overall skill level
+# ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
 design_ind21$variables$auxskill<-apply(design_ind21$variables[269:272],1,function(x) length(which(x=="None")))
