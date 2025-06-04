@@ -134,188 +134,174 @@ bruneidesign_ind24$variables$SFY <- bruneidesign_ind24$variables$SFY1 +
 #-------------------------------------------------------------------------------
 
 ### A. CC - Communication and collaboration
-design_ind21$variables$AIndex_ICC<-ifelse((design_ind21$variables$ICC2+
-                                             design_ind21$variables$ICC3+
-                                             design_ind21$variables$ICC4+
-                                             design_ind21$variables$ICC1)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$ICC2+
-                                                    design_ind21$variables$ICC3+
-                                                    design_ind21$variables$ICC4+
-                                                    design_ind21$variables$ICC1)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$ICC2+
-                                                           design_ind21$variables$ICC3+
-                                                           design_ind21$variables$ICC4+
-                                                           design_ind21$variables$ICC1)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$AIndex_CC<-ifelse((bruneidesign_ind24$variables$CC2+
+                                             bruneidesign_ind24$variables$CC3+
+                                             bruneidesign_ind24$variables$CC4+
+                                             bruneidesign_ind24$variables$CC1)==0,0,
+                                          ifelse((bruneidesign_ind24$variables$CC2+
+                                                    bruneidesign_ind24$variables$CC3+
+                                                    bruneidesign_ind24$variables$CC4+
+                                                    bruneidesign_ind24$variables$CC1)==1,1,
+                                                 ifelse((bruneidesign_ind24$variables$CC2+
+                                                           bruneidesign_ind24$variables$CC3+
+                                                           bruneidesign_ind24$variables$CC4+
+                                                           bruneidesign_ind24$variables$CC1)>1,2,0)))
 
 # Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_ICC <- factor(design_ind21$variables$AIndex_ICC,
-                                            levels = c(0,1,2,9),                      
+bruneidesign_ind24$variables$AIndex_CC <- factor(bruneidesign_ind24$variables$AIndex_CC,
+                                            levels = c(0,1,2),                      
                                             labels =  c('None',
                                                         'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
+                                                        'Above basic'),
                                             ordered = T)
 
 ### B. DCC - Digital content creation
-design_ind21$variables$AIndex_IDC<-ifelse((design_ind21$variables$IDC2+
-                                             design_ind21$variables$IDC3+
-                                             design_ind21$variables$IDC4+
-                                             design_ind21$variables$IDC1+
-                                             design_ind21$variables$IDC5+
-                                             design_ind21$variables$IDC6)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$IDC2+
-                                                    design_ind21$variables$IDC3+
-                                                    design_ind21$variables$IDC4+
-                                                    design_ind21$variables$IDC1+
-                                                    design_ind21$variables$IDC5+
-                                                    design_ind21$variables$IDC6)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$IDC2+
-                                                           design_ind21$variables$IDC3+
-                                                           design_ind21$variables$IDC4+
-                                                           design_ind21$variables$IDC1+
-                                                           design_ind21$variables$IDC5+
-                                                           design_ind21$variables$IDC6)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$AIndex_DCC<-ifelse((bruneidesign_ind24$variables$DCC2+
+                                             bruneidesign_ind24$variables$DCC3+
+                                             bruneidesign_ind24$variables$DCC4+
+                                             bruneidesign_ind24$variables$DCC1+
+                                             bruneidesign_ind24$variables$DCC5+
+                                             bruneidesign_ind24$variables$DCC6)==0,0,
+                                          ifelse((bruneidesign_ind24$variables$DCC2+
+                                                    bruneidesign_ind24$variables$DCC3+
+                                                    bruneidesign_ind24$variables$DCC4+
+                                                    bruneidesign_ind24$variables$DCC1+
+                                                    bruneidesign_ind24$variables$DCC5+
+                                                    bruneidesign_ind24$variables$DCC6)==1,1,
+                                                 ifelse((bruneidesign_ind24$variables$DCC2+
+                                                           bruneidesign_ind24$variables$DCC3+
+                                                           bruneidesign_ind24$variables$DCC4+
+                                                           bruneidesign_ind24$variables$DCC1+
+                                                           bruneidesign_ind24$variables$DCC5+
+                                                           bruneidesign_ind24$variables$DCC6)>1,2,0)))
 
 # Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_IDC <- factor(design_ind21$variables$AIndex_IDC,
-                                            levels = c(0,1,2,9),                      
+bruneidesign_ind24$variables$AIndex_DCC <- factor(bruneidesign_ind24$variables$AIndex_DCC,
+                                            levels = c(0,1,2),                      
                                             labels =  c('None',
                                                         'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
+                                                        'Above basic'),
                                             ordered = T)
 
 # C. IDL - Information and data literacy
-design_ind21$variables$AIndex_IDL<-ifelse((design_ind21$variables$IDL2+
-                                             design_ind21$variables$IDL3+
-                                             design_ind21$variables$IDL4)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$IDL2+
-                                                    design_ind21$variables$IDL3+
-                                                    design_ind21$variables$IDL4)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$IDL2+
-                                                           design_ind21$variables$IDL3+
-                                                           design_ind21$variables$IDL4)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$AIndex_IDL<-ifelse((bruneidesign_ind24$variables$IDL2+
+                                             bruneidesign_ind24$variables$IDL3+
+                                             bruneidesign_ind24$variables$IDL4+
+                                               bruneidesign_ind24$variables$IDL1)==0,0,
+                                          ifelse((bruneidesign_ind24$variables$IDL2+
+                                                    bruneidesign_ind24$variables$IDL3+
+                                                    bruneidesign_ind24$variables$IDL4+
+                                                  bruneidesign_ind24$variables$IDL1)==1,1,
+                                                 ifelse((bruneidesign_ind24$variables$IDL2+
+                                                           bruneidesign_ind24$variables$IDL3+
+                                                           bruneidesign_ind24$variables$IDL4+
+                                                           bruneidesign_ind24$variables$IDL1)>1,2,0
+                                                        )))
 
 # Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_IDL <- factor(design_ind21$variables$AIndex_IDL,
-                                            levels = c(0,1,2,9),                      
+bruneidesign_ind24$variables$AIndex_IDL <- factor(bruneidesign_ind24$variables$AIndex_IDL,
+                                            levels = c(0,1,2),                      
                                             labels =  c('None',
                                                         'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
+                                                        'Above basic'),
                                             ordered = T)
 
 ### D. PS - Problem solving
-design_ind21$variables$AIndex_IPL<-ifelse((design_ind21$variables$IPL2+
-                                             design_ind21$variables$IPL3+
-                                             design_ind21$variables$IPL4+
-                                             design_ind21$variables$IPL1+
-                                             design_ind21$variables$IPL5+
-                                             design_ind21$variables$IPL6)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$IPL2+
-                                                    design_ind21$variables$IPL3+
-                                                    design_ind21$variables$IPL4+
-                                                    design_ind21$variables$IPL1+
-                                                    design_ind21$variables$IPL5+
-                                                    design_ind21$variables$IPL6)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$IPL2+
-                                                           design_ind21$variables$IPL3+
-                                                           design_ind21$variables$IPL4+
-                                                           design_ind21$variables$IPL1+
-                                                           design_ind21$variables$IPL5+
-                                                           design_ind21$variables$IPL6)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$AIndex_PS<-ifelse((bruneidesign_ind24$variables$PS2+
+                                             bruneidesign_ind24$variables$PS3+
+                                             bruneidesign_ind24$variables$PS4+
+                                             bruneidesign_ind24$variables$PS1+
+                                             bruneidesign_ind24$variables$PS5+
+                                             bruneidesign_ind24$variables$PS6)==0,0,
+                                          ifelse((bruneidesign_ind24$variables$PS2+
+                                                    bruneidesign_ind24$variables$PS3+
+                                                    bruneidesign_ind24$variables$PS4+
+                                                    bruneidesign_ind24$variables$PS1+
+                                                    bruneidesign_ind24$variables$PS5+
+                                                    bruneidesign_ind24$variables$PS6)==1,1,
+                                                 ifelse((bruneidesign_ind24$variables$PS2+
+                                                           bruneidesign_ind24$variables$PS3+
+                                                           bruneidesign_ind24$variables$PS4+
+                                                           bruneidesign_ind24$variables$PS1+
+                                                           bruneidesign_ind24$variables$PS5+
+                                                           bruneidesign_ind24$variables$PS6)>1,2,0
+                                                        )))
 
 # Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_IPL <- factor(design_ind21$variables$AIndex_IPL,
-                                            levels = c(0,1,2,9),                      
+bruneidesign_ind24$variables$AIndex_PS <- factor(bruneidesign_ind24$variables$AIndex_PS,
+                                            levels = c(0,1,2),                      
                                             labels =  c('None',
                                                         'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
+                                                        'Above basic'
+                                                        ),
                                             ordered = T)
 
 ### E. SFY - Safety
-design_ind21$variables$AIndex_IPL<-ifelse((design_ind21$variables$SFY2+
-                                             design_ind21$variables$SFY3+
-                                             design_ind21$variables$SFY4+
-                                             design_ind21$variables$SFY1+
-                                             design_ind21$variables$SFY5+
-                                             design_ind21$variables$SFY6)==0 & design_ind21$variables$C3==1,0,
-                                          ifelse((design_ind21$variables$IPL2+
-                                                    design_ind21$variables$IPL3+
-                                                    design_ind21$variables$IPL4+
-                                                    design_ind21$variables$IPL1+
-                                                    design_ind21$variables$IPL5+
-                                                    design_ind21$variables$IPL6)==1 & design_ind21$variables$C3==1,1,
-                                                 ifelse((design_ind21$variables$IPL2+
-                                                           design_ind21$variables$IPL3+
-                                                           design_ind21$variables$IPL4+
-                                                           design_ind21$variables$IPL1+
-                                                           design_ind21$variables$IPL5+
-                                                           design_ind21$variables$IPL6)>1 & design_ind21$variables$C3==1,2,
-                                                        ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$AIndex_SFY<-ifelse((bruneidesign_ind24$variables$SFY2+
+                                             bruneidesign_ind24$variables$SFY1)==0,0,
+                                          ifelse((bruneidesign_ind24$variables$SFY2+
+                                                    bruneidesign_ind24$variables$SFY1)==1,1,
+                                                 ifelse((bruneidesign_ind24$variables$SFY2+
+                                                           bruneidesign_ind24$variables$SFY1)>1,2,0
+                                                      )))
 
 # Factoring and labelling skills proeficiency 
-design_ind21$variables$AIndex_IPL <- factor(design_ind21$variables$AIndex_IPL,
-                                            levels = c(0,1,2,9),                      
+bruneidesign_ind24$variables$AIndex_SFY <- factor(bruneidesign_ind24$variables$AIndex_SFY,
+                                            levels = c(0,1,2),                      
                                             labels =  c('None',
                                                         'Basic',
-                                                        'Above basic',
-                                                        'No internet use (last 3 months)'),
+                                                        'Above basic'
+                                                      ),
                                             ordered = T)
 
 # Labelling classes FOR THE WHOLE DIGITAL SKILLS
-design_ind21$variables<- apply_labels(design_ind21$variables,
+bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
                                       AIndex_IDL='Information and data literacy',
-                                      AIndex_ICC='Communication and collaboration',
-                                      AIndex_IDC='Digital content creation',
-                                      AIndex_IPL='Problem solving',
+                                      AIndex_CC='Communication and collaboration',
+                                      AIndex_DCC='Digital content creation',
+                                      AIndex_PS='Problem solving',
                                       AIndex_SFY="Safety")
 
 
 # Frequency tables for each class
-svymean(~AIndex_IDL,design_ind21)
-svymean(~AIndex_ICC,design_ind21)
-svymean(~AIndex_IDC,design_ind21)
-svymean(~AIndex_IPL,design_ind21)
+svymean(~AIndex_IDL,bruneidesign_ind24)
+svymean(~AIndex_CC,bruneidesign_ind24)
+svymean(~AIndex_DCC,bruneidesign_ind24)
+svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY, bruneidesign_ind24)
 
 
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
-design_ind21$variables$auxskill<-apply(design_ind21$variables[269:272],1,function(x) length(which(x=="None")))
-#table(design_ind21$variables$auxskill)
+bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[269:272],1,function(x) length(which(x=="None")))
+#table(bruneidesign_ind24$variables$auxskill)
 
 
-design_ind21$variables$Skill<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$auxskill==0,1,
-                                     ifelse(design_ind21$variables$C3==1 & design_ind21$variables$auxskill==1,2,
-                                            ifelse((design_ind21$variables$C3==1 & (design_ind21$variables$auxskill>1)),3,
-                                                   ifelse(design_ind21$variables$C3!=1,9,0))))
+bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==0,1,
+                                     ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==1,2,
+                                            ifelse((bruneidesign_ind24$variables$C3==1 & (bruneidesign_ind24$variables$auxskill>1)),3,
+                                                   ifelse(bruneidesign_ind24$variables$C3!=1,9,0))))
 
 
 
-design_ind21$variables$Skill <- factor(design_ind21$variables$Skill,
+bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
                                        levels = c(1,2,3,9),                      
                                        labels =  c('At least basic level of skills',
                                                    'Skills in 3 of 4 areas',
                                                    'Skills in 0-2 out of 4 areas',
                                                    'No internet use (last 3 months)'),
                                        ordered = T)
-#table(design_ind21$variables$Skill)
+#table(bruneidesign_ind24$variables$Skill)
 
 # Sector charts (pie charts) for skill classes
 
 #-------------------------------------------------------------------------------
 # Generating survey means objects for each Skills class
-b <- svymean(~AIndex_IDL,design_ind21)
-c <- svymean(~AIndex_ICC,design_ind21)
-d <- svymean(~AIndex_IDC,design_ind21)
-e <- svymean(~AIndex_IPL,design_ind21)
+b <- svymean(~AIndex_IDL,bruneidesign_ind24)
+c <- svymean(~AIndex_ICC,bruneidesign_ind24)
+d <- svymean(~AIndex_DCC,bruneidesign_ind24)
+e <- svymean(~AIndex_PS,bruneidesign_ind24)
 
 # Converting survey means in tibbles, extracting and formatting labels and means
 b <- as_tibble(b) %>% 
@@ -397,7 +383,7 @@ e %>%
        fill  = 'Skill level')
 
 # Generating survey mean objects for overall skill indicator
-a <- svymean(~Skill, design_ind21)
+a <- svymean(~Skill, bruneidesign_ind24)
 
 
 # Converting survey mean in tibble, extracting and formatting labels and mean
@@ -427,17 +413,17 @@ a %>%
 
 #Include gender here, dont be sexist
 
-design_ind21$variables$PEA_2 <- factor(design_ind21$variables$PEA_2,
+bruneidesign_ind24$variables$PEA_2 <- factor(bruneidesign_ind24$variables$PEA_2,
                                        levels = c(1,2),                      
                                        labels =  c('In the workforce',
                                                    'Out of workforce'),
                                        ordered = T)
-design_ind21$variables<- apply_labels(design_ind21$variables,
+bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
                                       PEA_2='Workforce status')
 
 
 # Getting mean of overall skill indicator by workforce condition
-f <- svyby(~Skill,~PEA_2, design_ind21, svymean) %>% 
+f <- svyby(~Skill,~PEA_2, bruneidesign_ind24, svymean) %>% 
   pivot_longer(cols = -PEA_2,
                values_to = 'values',
                names_to = 'measure') %>% 
