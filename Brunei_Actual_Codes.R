@@ -60,10 +60,10 @@ design_ind21$variables$IDC<-design_ind21$variables$IDC1+
 
 ###   Digital Skill                                               Database variable
 
-## 1. Reading or downloading newspapers, magazines or books	            IDC1    
-## 2. Getting information about goods or services	                      IDC2
-## 3. Seeking health information	                                      IDC3
-## 4. Verifying the reliability of information found online	            IDC4
+## 1. Reading or downloading newspapers, magazines or books	            IDL1    
+## 2. Getting information about goods or services	                      IDL2
+## 3. Seeking health information	                                      IDL3
+## 4. Verifying the reliability of information found online	            IDL4
 
 design_ind21$variables$IDL2 <- ifelse(design_ind21$variables$C8_A == 1, 1, 0)
 design_ind21$variables$IDL3 <- ifelse(design_ind21$variables$C9_D == 1, 1, 0)
