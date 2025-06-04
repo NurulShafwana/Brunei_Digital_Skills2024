@@ -274,9 +274,10 @@ svymean(~AIndex_SFY,bruneidesign_ind24)
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
-bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[269:272],1,function(x) length(which(x=="None")))
+bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[, c("AIndex_CC", "AIndex_DCC", "AIndex_IDL", "AIndex_PS", "AIndex_SFY")],
+                                             1,
+                                             function(x) length(which(x=="None")))
 #table(bruneidesign_ind24$variables$auxskill)
-
 
 bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==0,1,
                                      ifelse(bruneidesign_ind24$variables$C3==1 & bruneidesign_ind24$variables$auxskill==1,2,
