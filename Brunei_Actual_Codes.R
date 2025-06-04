@@ -19,16 +19,15 @@ install.load::install_load("haven",
 ## 3. Sending messages (e.g. email, SMS) with attached files	                CC3
 ## 4. Taking part in consultation or voting via Internet	                    CC4
 
-design_ind21$variables$ICC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_C==1,1,0)
-design_ind21$variables$ICC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_C==1,1,0)
-design_ind21$variables$ICC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_D1==1,1,0)
-design_ind21$variables$ICC4<-ifelse(design_ind21$variables$C3==1 & 
-                                      (design_ind21$variables$G4_D==1 | design_ind21$variables$G4_E==1),1,0)
+bruneidesign_ind24$variables$CC1 <- ifelse(bruneidesign_ind24$variables$CC1 == 1, 1, 0)
+bruneidesign_ind24$variables$CC2 <- ifelse(bruneidesign_ind24$variables$CC2 == 1, 1, 0)
+bruneidesign_ind24$variables$CC3 <- ifelse(bruneidesign_ind24$variables$CC3 == 1, 1, 0)
+bruneidesign_ind24$variables$CC4 <- ifelse(bruneidesign_ind24$variables$CC4 == 1, 1, 0)
 
-design_ind21$variables$ICC<-design_ind21$variables$ICC1+
-  design_ind21$variables$ICC2+
-  design_ind21$variables$ICC3+
-  design_ind21$variables$ICC4
+bruneidesign_ind24$variables$CC <- bruneidesign_ind24$variables$CC1 +
+  bruneidesign_ind24$variables$CC2 +
+  bruneidesign_ind24$variables$CC3 +
+  bruneidesign_ind24$variables$CC4
 
 
 # B. Digital content creation
@@ -42,19 +41,20 @@ design_ind21$variables$ICC<-design_ind21$variables$ICC1+
 ## 5. Uploading self/user-created content	                           DCC5
 ## 6. Using editing software/application over the internet	         DCC6
 
-design_ind21$variables$IDC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_B==1,1,0)
-design_ind21$variables$IDC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_G==1,1,0)
-design_ind21$variables$IDC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_D==1,1,0)
-design_ind21$variables$IDC4<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_I==1,1,0)
-design_ind21$variables$IDC5<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_B==1,1,0)
-design_ind21$variables$IDC6<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_C==1,1,0)
+bruneidesign_ind24$variables$DCC1 <- ifelse(bruneidesign_ind24$variables$DCC1 == 1, 1, 0)
+bruneidesign_ind24$variables$DCC2 <- ifelse(bruneidesign_ind24$variables$DCC2 == 1, 1, 0)
+bruneidesign_ind24$variables$DCC3 <- ifelse(bruneidesign_ind24$variables$DCC3 == 1, 1, 0)
+bruneidesign_ind24$variables$DCC4 <- ifelse(bruneidesign_ind24$variables$DCC4 == 1, 1, 0)
+bruneidesign_ind24$variables$DCC5 <- ifelse(bruneidesign_ind24$variables$DCC5 == 1, 1, 0)
+bruneidesign_ind24$variables$DCC6 <- ifelse(bruneidesign_ind24$variables$DCC6 == 1, 1, 0)
 
-design_ind21$variables$IDC<-design_ind21$variables$IDC1+
-  design_ind21$variables$IDC2+
-  design_ind21$variables$IDC3+
-  design_ind21$variables$IDC4+
-  design_ind21$variables$IDC5+
-  design_ind21$variables$IDC6
+bruneidesign_ind24$variables$DCC <- bruneidesign_ind24$variables$DCC1 +
+  bruneidesign_ind24$variables$DCC2 +
+  bruneidesign_ind24$variables$DCC3 +
+  bruneidesign_ind24$variables$DCC4 +
+  bruneidesign_ind24$variables$DCC5 +
+  bruneidesign_ind24$variables$DCC6
+  
 
 # C. Information and Data Literacy
 
@@ -90,19 +90,19 @@ table(bruneidesign_ind24$variables$IDL)
 ## 5. Doing an online course	                                                PS5
 ## 6. Connecting and installing new devices	                                  PS6
 
-design_ind21$variables$IPL1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_F==1,1,0)
-design_ind21$variables$IPL2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_E==1,1,0)
-design_ind21$variables$IPL3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_H==1,1,0)
-design_ind21$variables$IPL4<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C8_H==1,1,0)
-design_ind21$variables$IPL5<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C10_B==1,1,0)
-design_ind21$variables$IPL6<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$H2==1,1,0)
+bruneidesign_ind24$variables$PS1 <- ifelse(bruneidesign_ind24$variables$PS1 == 1, 1, 0)
+bruneidesign_ind24$variables$PS2 <- ifelse(bruneidesign_ind24$variables$PS2 == 1, 1, 0)
+bruneidesign_ind24$variables$PS3 <- ifelse(bruneidesign_ind24$variables$PS3 == 1, 1, 0)
+bruneidesign_ind24$variables$PS4 <- ifelse(bruneidesign_ind24$variables$PS4 == 1, 1, 0)
+bruneidesign_ind24$variables$PS5 <- ifelse(bruneidesign_ind24$variables$PS5 == 1, 1, 0)
+bruneidesign_ind24$variables$PS6 <- ifelse(bruneidesign_ind24$variables$PS6 == 1, 1, 0)
 
-design_ind21$variables$IPL<-design_ind21$variables$IPL1+
-  design_ind21$variables$IPL2+
-  design_ind21$variables$IPL3+
-  design_ind21$variables$IPL4+
-  design_ind21$variables$IPL5+
-  design_ind21$variables$IPL6
+bruneidesign_ind24$variables$PS <- bruneidesign_ind24$variables$PS1 +
+  bruneidesign_ind24$variables$PS2 +
+  bruneidesign_ind24$variables$PS3 +
+  bruneidesign_ind24$variables$PS4 +
+  bruneidesign_ind24$variables$PS5 +
+  bruneidesign_ind24$variables$PS6
 
 # E. Safety
 
@@ -112,6 +112,12 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
 ## 2. Setting up effective security measures to protect devices & accounts 	        SFY2
 
 
+bruneidesign_ind24$variables$SFY1 <- ifelse(bruneidesign_ind24$variables$SFY1 == 1, 1, 0)
+bruneidesign_ind24$variables$SFY2 <- ifelse(bruneidesign_ind24$variables$SFY2 == 1, 1, 0)
+
+bruneidesign_ind24$variables$SFY <- bruneidesign_ind24$variables$SFY1 +
+  bruneidesign_ind24$variables$SFY2 
+  
 
 
 #IDL2: person got info about goods/services online
