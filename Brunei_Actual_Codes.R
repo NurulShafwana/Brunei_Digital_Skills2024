@@ -145,7 +145,7 @@ bruneidesign_ind24$variables$AIndex_CC<-ifelse((bruneidesign_ind24$variables$CC2
                                                  ifelse((bruneidesign_ind24$variables$CC2+
                                                            bruneidesign_ind24$variables$CC3+
                                                            bruneidesign_ind24$variables$CC4+
-                                                           bruneidesign_ind24$variables$CC1)>1,2,0)))
+                                                           bruneidesign_ind24$variables$CC1)>=2,2,0)))
 
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_CC <- factor(bruneidesign_ind24$variables$AIndex_CC,
@@ -195,7 +195,7 @@ bruneidesign_ind24$variables$AIndex_IDL<-ifelse((bruneidesign_ind24$variables$ID
                                                  ifelse((bruneidesign_ind24$variables$IDL2+
                                                            bruneidesign_ind24$variables$IDL3+
                                                            bruneidesign_ind24$variables$IDL4+
-                                                           bruneidesign_ind24$variables$IDL1)>1,2,0
+                                                           bruneidesign_ind24$variables$IDL1)>=2,2,0
                                                         )))
 
 # Factoring and labelling skills proeficiency 
@@ -224,7 +224,7 @@ bruneidesign_ind24$variables$AIndex_PS<-ifelse((bruneidesign_ind24$variables$PS2
                                                            bruneidesign_ind24$variables$PS4+
                                                            bruneidesign_ind24$variables$PS1+
                                                            bruneidesign_ind24$variables$PS5+
-                                                           bruneidesign_ind24$variables$PS6)>1,2,0
+                                                           bruneidesign_ind24$variables$PS6)>=2,2,0
                                                         )))
 
 # Factoring and labelling skills proeficiency 
@@ -242,7 +242,7 @@ bruneidesign_ind24$variables$AIndex_SFY<-ifelse((bruneidesign_ind24$variables$SF
                                           ifelse((bruneidesign_ind24$variables$SFY2+
                                                     bruneidesign_ind24$variables$SFY1)==1,1,
                                                  ifelse((bruneidesign_ind24$variables$SFY2+
-                                                           bruneidesign_ind24$variables$SFY1)>1,2,0
+                                                           bruneidesign_ind24$variables$SFY1)>=2,2,0
                                                       )))
 
 # Factoring and labelling skills proeficiency 
