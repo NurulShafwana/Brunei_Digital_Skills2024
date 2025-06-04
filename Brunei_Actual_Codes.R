@@ -298,10 +298,11 @@ bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
 
 #-------------------------------------------------------------------------------
 # Generating survey means objects for each Skills class
-b <- svymean(~AIndex_IDL,bruneidesign_ind24)
-c <- svymean(~AIndex_ICC,bruneidesign_ind24)
-d <- svymean(~AIndex_DCC,bruneidesign_ind24)
+b <- svymean(~AIndex_CC,bruneidesign_ind24)
+c <- svymean(~AIndex_DCC,bruneidesign_ind24)
+d <- svymean(~AIndex_IDL,bruneidesign_ind24)
 e <- svymean(~AIndex_PS,bruneidesign_ind24)
+f <- svymean(~AIndex_SFY,bruneidesign_ind24)
 
 # Converting survey means in tibbles, extracting and formatting labels and means
 b <- as_tibble(b) %>% 
@@ -315,6 +316,9 @@ d <- as_tibble(d) %>%
          mean = formattable::percent(mean, digits = 1))
 e <- as_tibble(e) %>% 
   mutate(labels_cat = substring(names(e), 11),
+         mean = formattable::percent(mean, digits = 1))
+f <- as_tibble(f) %>% 
+  mutate(labels_cat = substring(names(f), 11),
          mean = formattable::percent(mean, digits = 1))
 
 ggplot2::theme_set(theme_bw() +
