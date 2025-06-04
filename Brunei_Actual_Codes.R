@@ -9,24 +9,69 @@ install.load::install_load("haven",
                            "readxl",
                            "expss",
                            "formattable")
-#=============================================#
-# For indication of Internet, use variable C3 #
-#=============================================#
 
-# A. Information and Data Literacy
-###   Digital Skill                                 Database variable
-## 1. Verifying the reliability of information 	    Not collected
-## 2. Getting information about goods or services	  C8_A
-## 3. Reading or downloading newspapers, etc	      C9_D
-## 4. Seeking health-related information	          C8_B
+# A. Communication and Collaboration
 
-design_ind21$variables$IDL2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C8_A==1,1,0)
-design_ind21$variables$IDL3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C9_D==1,1,0)
-design_ind21$variables$IDL4<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C8_B==1,1,0)
+###   Digital Skill                                                         Database variable
 
-design_ind21$variables$IDL<-design_ind21$variables$IDL2+
-  design_ind21$variables$IDL3+
-  design_ind21$variables$IDL4  
+## 1. Participating in social networks (including social media) 	            CC1
+## 2. Making calls over the internet or messaging apps                        CC2
+## 3. Sending messages (e.g. email, SMS) with attached files	                CC3
+## 4. Taking part in consultation or voting via Internet	                    CC4
+
+design_ind21$variables$ICC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_C==1,1,0)
+design_ind21$variables$ICC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_C==1,1,0)
+design_ind21$variables$ICC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_D1==1,1,0)
+design_ind21$variables$ICC4<-ifelse(design_ind21$variables$C3==1 & 
+                                      (design_ind21$variables$G4_D==1 | design_ind21$variables$G4_E==1),1,0)
+
+design_ind21$variables$ICC<-design_ind21$variables$ICC1+
+  design_ind21$variables$ICC2+
+  design_ind21$variables$ICC3+
+  design_ind21$variables$ICC4
+
+
+# B. Digital content creation
+
+###   Digital Skill                                            Database variable
+
+## 1. Creating electronic presentations 	                           DCC1
+## 2. Writing a computer program 	                                   DCC2
+## 3. Using basic arithmetic formula in a spreadsheet 	             DCC3
+## 4. Using copy and paste tools 	                                   DCC4
+## 5. Uploading self/user-created content	                           DCC5
+## 6. Using editing software/application over the internet	         DCC6
+
+design_ind21$variables$IDC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_B==1,1,0)
+design_ind21$variables$IDC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_G==1,1,0)
+design_ind21$variables$IDC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_D==1,1,0)
+design_ind21$variables$IDC4<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_I==1,1,0)
+design_ind21$variables$IDC5<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_B==1,1,0)
+design_ind21$variables$IDC6<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_C==1,1,0)
+
+design_ind21$variables$IDC<-design_ind21$variables$IDC1+
+  design_ind21$variables$IDC2+
+  design_ind21$variables$IDC3+
+  design_ind21$variables$IDC4+
+  design_ind21$variables$IDC5+
+  design_ind21$variables$IDC6
+
+# C. Information and Data Literacy
+
+###   Digital Skill                                               Database variable
+
+## 1. Reading or downloading newspapers, magazines or books	            IDC1    
+## 2. Getting information about goods or services	                      IDC2
+## 3. Seeking health information	                                      IDC3
+## 4. Verifying the reliability of information found online	            IDC4
+
+design_ind21$variables$IDL2 <- ifelse(design_ind21$variables$C8_A == 1, 1, 0)
+design_ind21$variables$IDL3 <- ifelse(design_ind21$variables$C9_D == 1, 1, 0)
+design_ind21$variables$IDL4 <- ifelse(design_ind21$variables$C8_B == 1, 1, 0)
+
+design_ind21$variables$IDL <- design_ind21$variables$IDL2 +
+  design_ind21$variables$IDL3 +
+  design_ind21$variables$IDL4
 
 # The above code basically means that :
 
@@ -52,60 +97,17 @@ Otherwise, give them a 0"
 # 99 Not applicable
 
 
-# B. Communication and Collaboration
-###   Digital Skill                                                               Database variable
-## 1. Sending messages (e.g. email, messaging service, SMS) with attached files 	I1_C
-## 2. Making calls (Telephoning over the Internet)                                C7_C
-## 3. Participating in social networks	                                          C7_D1
-## 4. Taking part in consultation or voting via Internet	                        G4_D & G4_E
 
-design_ind21$variables$ICC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_C==1,1,0)
-design_ind21$variables$ICC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_C==1,1,0)
-design_ind21$variables$ICC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C7_D1==1,1,0)
-design_ind21$variables$ICC4<-ifelse(design_ind21$variables$C3==1 & 
-                                      (design_ind21$variables$G4_D==1 | design_ind21$variables$G4_E==1),1,0)
+# D. Problem Solving
 
-design_ind21$variables$ICC<-design_ind21$variables$ICC1+
-  design_ind21$variables$ICC2+
-  design_ind21$variables$ICC3+
-  design_ind21$variables$ICC4
+###   Digital Skill                                                      Database variable
 
-# C. Digital content creation
-###   Digital Skill                                       Database variable
-## 1. Using copy and paste tools 	                        I1_B
-## 2. Creating electronic presentations 	                I1_G
-## 3. Using basic arithmetic formula in a spreadsheet 	  I1_D
-## 4. Writing a computer program 	                        I1_I
-## 5. Editing online text, spreadsheets, presentations	  C11_B
-## 6. Uploading self/user-created content	                C11_C
-
-design_ind21$variables$IDC1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_B==1,1,0)
-design_ind21$variables$IDC2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_G==1,1,0)
-design_ind21$variables$IDC3<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_D==1,1,0)
-design_ind21$variables$IDC4<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_I==1,1,0)
-design_ind21$variables$IDC5<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_B==1,1,0)
-design_ind21$variables$IDC6<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$C11_C==1,1,0)
-
-design_ind21$variables$IDC<-design_ind21$variables$IDC1+
-  design_ind21$variables$IDC2+
-  design_ind21$variables$IDC3+
-  design_ind21$variables$IDC4+
-  design_ind21$variables$IDC5+
-  design_ind21$variables$IDC6
-
-# D. Safety
-###   Digital Skill                           Database variable
-## 1. Changing privacy settings 	            Not Collected
-## 2. Setting up effective security measures 	Not Collected
-
-# E. Problem Solving
-###   Digital Skill                                               Database variable
-## 1. Finding, downloading, installing and configuring software 	I1_F
-## 2. Connecting and installing new devices 	                    I1_E
-## 3. Transferring files or applications between devices	        I1_H
-## 4. Electronic financial transactions	                          C8_H
-## 5. Doing an online course	                                    C10_B
-## 6. Purchasing or ordering goods or services	                  H2
+## 1. Finding, downloading, installing and configuring software & apps 	      PS1
+## 2. Transferring files or applications between devices 	                    PS2
+## 3. Electronic financial transactions (e.g. internet banking)	              PS3
+## 4. Purchasing or ordering goods or services (online)	                      PS4
+## 5. Doing an online course	                                                PS5
+## 6. Connecting and installing new devices	                                  PS6
 
 design_ind21$variables$IPL1<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_F==1,1,0)
 design_ind21$variables$IPL2<-ifelse(design_ind21$variables$C3==1 & design_ind21$variables$I1_E==1,1,0)
@@ -120,6 +122,15 @@ design_ind21$variables$IPL<-design_ind21$variables$IPL1+
   design_ind21$variables$IPL4+
   design_ind21$variables$IPL5+
   design_ind21$variables$IPL6
+
+# E. Safety
+
+###   Digital Skill                                                           Database variable
+
+## 1. Changing privacy setting on device, account or app 	                          SFY1
+## 2. Setting up effective security measures to protect devices & accounts 	        SFY2
+
+
 
 
 #IDL2: person got info about goods/services online
