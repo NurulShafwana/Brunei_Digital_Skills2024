@@ -130,7 +130,7 @@ bruneidesign_ind24$variables$SFY <- bruneidesign_ind24$variables$SFY1 +
 
 
 #===============================================================================
-# Calculating the Skills by areas
+# Calculating the Skills by areas by levels
 #-------------------------------------------------------------------------------
 
 ### A. CC - Communication and collaboration
