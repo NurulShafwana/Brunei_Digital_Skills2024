@@ -513,7 +513,13 @@ f %>%
        x = 'Overall Skill',
        y = 'Distribution (%)',
        fill = 'Genders') +
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Gender",
+    values = c(
+      "Male" = "#C7DBFF",    # pastel blue
+      "Female" = "#FFB6C1"   # pastel orange
+    )
+  ) +
   theme_bw() +
   theme(plot.title = element_text(hjust = "0.5",face = "bold", size=14),
         strip.background = element_rect(fill = 'white'),
