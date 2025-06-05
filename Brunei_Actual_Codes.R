@@ -481,9 +481,9 @@ bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
                                       GEN='Genders')
 
 
-# Getting mean of overall skill indicator by workforce condition
-f <- svyby(~Skill,~PEA_2, bruneidesign_ind24, svymean) %>% 
-  pivot_longer(cols = -PEA_2,
+# Getting mean of overall skill indicator by genders condition
+f <- svyby(~Skill,~GEN, bruneidesign_ind24, svymean) %>% 
+  pivot_longer(cols = -GEN,
                values_to = 'values',
                names_to = 'measure') %>% 
   filter(!grepl('se.Skill', measure)) %>% 
@@ -498,21 +498,21 @@ f <- svyby(~Skill,~PEA_2, bruneidesign_ind24, svymean) %>%
 
 
 f %>% 
-  mutate(PEA_2 = forcats::fct_reorder(PEA_2, values, .desc = F)) %>% 
+  mutate(GEN = forcats::fct_reorder(GEN, values, .desc = F)) %>% 
   ggplot(aes(y = values, 
-             fill = PEA_2,
+             fill = GEN,
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
   geom_label(aes(label = values,
-                 group = PEA_2),
+                 group = GEN),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
   scale_y_continuous(labels = scales::percent) +
-  labs(title = 'Overall Skill x Workforce status',
+  labs(title = 'Overall Skill x Genders',
        x = 'Overall Skill',
        y = 'Distribution (%)',
-       fill = 'Workforce status') +
+       fill = 'Genders') +
   scale_fill_viridis_d() +
   theme_bw() +
   theme(plot.title = element_text(hjust = "0.5",face = "bold", size=14),
