@@ -10,6 +10,8 @@ install.load::install_load("haven",
                            "expss",
                            "formattable")
 
+### BEFORE running these codes, make sure the Rdata of bruneidesign_ind24 is already in Environment
+
 # A. Communication and Collaboration
 ###   Digital Skill                                                         Database variable
 
