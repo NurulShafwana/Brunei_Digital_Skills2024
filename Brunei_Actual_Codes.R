@@ -292,7 +292,6 @@ bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
 #table(bruneidesign_ind24$variables$Skill)
 
 # Sector charts (pie charts) for skill classes
-
 #-------------------------------------------------------------------------------
 # Generating survey means objects for each Skills class
 b <- svymean(~AIndex_CC,bruneidesign_ind24)
