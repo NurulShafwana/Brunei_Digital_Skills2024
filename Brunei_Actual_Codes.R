@@ -341,7 +341,14 @@ b %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "None" = "#FFB6C1",         
+      "Basic" = "#C7DBFF",       
+      "Above basic" = "#B1E5D3"   
+    )
+  )+
   labs(title = "Communication & Collaboration",
        fill  = 'Skill level') 
 
@@ -355,7 +362,14 @@ c %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "None" = "#FFB6C1",         
+      "Basic" = "#C7DBFF",       
+      "Above basic" = "#B1E5D3"   
+    )
+  )+
   labs(title = "Digital Content Creation",
        fill  = 'Skill level')
 
@@ -369,7 +383,14 @@ d %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) + 
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "None" = "#FFB6C1",         
+      "Basic" = "#C7DBFF",       
+      "Above basic" = "#B1E5D3"   
+    )
+  )+
   labs(title = "Information and Data Literacy",
        fill  = 'Skill level')
 
@@ -383,7 +404,14 @@ e %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) + 
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "None" = "#FFB6C1",         
+      "Basic" = "#C7DBFF",       
+      "Above basic" = "#B1E5D3"   
+    )
+  )+
   labs(title = "Problem solving",
        fill  = 'Skill level')
 
@@ -397,7 +425,14 @@ f %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) + 
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "None" = "#FFB6C1",         
+      "Basic" = "#C7DBFF",       
+      "Above basic" = "#B1E5D3"   
+    )
+  )+
   labs(title = "Safety",
        fill  = 'Skill level')
 
