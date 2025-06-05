@@ -455,7 +455,14 @@ a %>%
              fill = "white", colour = "black", 
              position= position_fill(vjust = .5)) +
   scale_y_continuous(labels = scales::percent) + 
-  scale_fill_viridis_d() +
+  scale_fill_manual(
+    name = "Skill level",
+    values = c(
+      "Skills in 0-2 out of 4 areas"   = "#FFB6C1",    # None
+      "Skills in 3 of 4 areas"         = "#C7DBFF",   # Basic
+      "At least basic level of skills" = "#B1E5D3"   # Above basic
+    )
+  )+
   labs(title = "Overall Skill",
        fill  = 'Skill level')
 
