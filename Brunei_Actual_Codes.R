@@ -467,20 +467,18 @@ a %>%
        fill  = 'Skill level')
 
 
-# Barplot for skill classes by Workforce status
-
+# Barplot for skill classes by Genders
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
+# Include gender here, dont be sexist
 
-#Include gender here, dont be sexist
-
-bruneidesign_ind24$variables$PEA_2 <- factor(bruneidesign_ind24$variables$PEA_2,
+bruneidesign_ind24$variables$GEN <- factor(bruneidesign_ind24$variables$GEN,
                                        levels = c(1,2),                      
-                                       labels =  c('In the workforce',
-                                                   'Out of workforce'),
+                                       labels =  c('Male',
+                                                   'Female'),
                                        ordered = T)
 bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
-                                      PEA_2='Workforce status')
+                                      GEN='Genders')
 
 
 # Getting mean of overall skill indicator by workforce condition
