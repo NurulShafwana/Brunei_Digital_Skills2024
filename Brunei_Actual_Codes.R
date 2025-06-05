@@ -11,7 +11,6 @@ install.load::install_load("haven",
                            "formattable")
 
 # A. Communication and Collaboration
-
 ###   Digital Skill                                                         Database variable
 
 ## 1. Participating in social networks (including social media) 	            CC1
@@ -31,7 +30,6 @@ bruneidesign_ind24$variables$CC <- bruneidesign_ind24$variables$CC1 +
 
 
 # B. Digital content creation
-
 ###   Digital Skill                                            Database variable
 
 ## 1. Creating electronic presentations 	                           DCC1
@@ -57,7 +55,6 @@ bruneidesign_ind24$variables$DCC <- bruneidesign_ind24$variables$DCC1 +
   
 
 # C. Information and Data Literacy
-
 ###   Digital Skill                                               Database variable
 
 ## 1. Reading or downloading newspapers, magazines or books	            IDL1    
@@ -76,11 +73,10 @@ bruneidesign_ind24$variables$IDL <- bruneidesign_ind24$variables$IDL1 +
   bruneidesign_ind24$variables$IDL4
 
 #to check
-table(bruneidesign_ind24$variables$IDL)
+#table(bruneidesign_ind24$variables$IDL)
 
 
 # D. Problem Solving
-
 ###   Digital Skill                                                      Database variable
 
 ## 1. Finding, downloading, installing and configuring software & apps 	      PS1
@@ -105,7 +101,6 @@ bruneidesign_ind24$variables$PS <- bruneidesign_ind24$variables$PS1 +
   bruneidesign_ind24$variables$PS6
 
 # E. Safety
-
 ###   Digital Skill                                                           Database variable
 
 ## 1. Changing privacy setting on device, account or app 	                          SFY1
@@ -305,8 +300,10 @@ e <- svymean(~AIndex_PS,bruneidesign_ind24)
 f <- svymean(~AIndex_SFY,bruneidesign_ind24)
 
 # Converting survey means in tibbles, extracting and formatting labels and means
+# mutate(labels_cat = substring(names(b), 10)) means extracting the 10th letter from AIndex_CC
+# mutate(labels_cat = substring(names(b), 10)) means extracting the 11th letter from AIndex_DCC
 b <- as_tibble(b) %>% 
-  mutate(labels_cat = substring(names(b), 11),
+  mutate(labels_cat = substring(names(b), 10),
          mean = formattable::percent(mean, digits = 1))
 c <- as_tibble(c) %>% 
   mutate(labels_cat = substring(names(c), 11),
@@ -315,7 +312,7 @@ d <- as_tibble(d) %>%
   mutate(labels_cat = substring(names(d), 11),
          mean = formattable::percent(mean, digits = 1))
 e <- as_tibble(e) %>% 
-  mutate(labels_cat = substring(names(e), 11),
+  mutate(labels_cat = substring(names(e), 10),
          mean = formattable::percent(mean, digits = 1))
 f <- as_tibble(f) %>% 
   mutate(labels_cat = substring(names(f), 11),
