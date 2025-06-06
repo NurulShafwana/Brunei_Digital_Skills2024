@@ -484,46 +484,59 @@ a %>%
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
 # Include gender here, dont be sexist
-# Getting mean of overall skill indicator by genders condition
-skill_none <- svyby(~skill_none, ~GEN, bruneidesign_ind24, svymean)
-skill_basic <- svyby(~skill_basic, ~GEN, bruneidesign_ind24, svymean)
-skill_above <- svyby(~skill_above, ~GEN, bruneidesign_ind24, svymean)
+bruneidesign_ind24$variables$GEN <- haven::as_factor(bruneidesign_ind24$variables$GEN)
+bruneidesign_ind24$variables$GEN <- factor(bruneidesign_ind24$variables$GEN,
+                                           levels = c(1, 2),
+                                           labels = c("MALE", "FEMALE"),
+                                           ordered = TRUE)
+# Filter out NA in Skill if any
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 
-# bruneidesign_ind24$variables$GEN <- factor(bruneidesign_ind24$variables$GEN,
-#                                            levels = c(1,2),                      
-#                                            labels =  c('Male',
-#                                                        'Female'),
-#                                            ordered = T)
-# bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
-#                                             GEN='Genders')
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "At least basic level of skills", 1, 0),
+    skill_basic = if_else(Skill == "Skills in 2-3 out of 5 areas", 1, 0),
+    skill_above = if_else(Skill == "Skills in 4-5 out of 5 areas", 1, 0)
+  )
 
-# bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
-#   mutate(
-#     skill_above  = as.numeric(Skill == "Skills in 4-5 out of 5 areas"),
-#     skill_basic  = as.numeric(Skill == "Skills in 2-3 out of 5 areas"),
-#     skill_none   = as.numeric(Skill == "At least basic level of skills"),
-#     
-#   )
-bruneidesign_ind24 <- update(bruneidesign_ind24,
-                             GEN = factor(GEN,
-                                          levels = c(1,2),
-                                          labels = c("Male", "Female"),
-                                          ordered = TRUE),
-                             skill_above  = as.numeric(Skill == "Skills in 4-5 out of 5 areas"),
-                             skill_basic  = as.numeric(Skill == "Skills in 2-3 out of 5 areas"),
-                             skill_none   = as.numeric(Skill == "At least basic level of skills")
-)
+# Compute skill means by gender
+#-------------------------------------------------------------------------------
 
-f <- bind_rows(
-  skill_none %>% rename(values = skill_none) %>% mutate(measure = "At least basic level of skills"),
-  skill_basic %>% rename(values = skill_basic) %>% mutate(measure = "Skills in 2-3 out of 5 areas"),
-  skill_above %>% rename(values = skill_above) %>% mutate(measure = "Skills in 4-5 out of 5 areas")
-)
+# Function to compute skill means by GEN
+get_skill_means <- function(gen_value) {
+  sub <- subset(design_filtered, GEN == gen_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    GEN = gen_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
 
-# Add formatted percent labels for geom_label()
-f <- f %>% mutate(values_label = scales::percent(values, accuracy = 1))
+# Apply to both genders
+df_male <- get_skill_means("MALE")
+df_female <- get_skill_means("FEMALE")
 
-# Plot
+# Combine and clean
+f <- bind_rows(df_male, df_female) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "At least basic level of skills",
+      measure == "skill_basic" ~ "Skills in 2-3 out of 5 areas",
+      measure == "skill_above" ~ "Skills in 4-5 out of 5 areas"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure,
+                     levels = c("At least basic level of skills",
+                                "Skills in 2-3 out of 5 areas",
+                                "Skills in 4-5 out of 5 areas"),
+                     ordered = TRUE)
+  )
+
+#-------------------------------------------------------------------------------
+# Generating barplot
 f %>% 
   mutate(GEN = forcats::fct_reorder(GEN, values, .desc = F)) %>% 
   ggplot(aes(y = values, 
@@ -531,23 +544,17 @@ f %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values_label,
+  geom_label(aes(label = values,
                  group = GEN),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
   scale_y_continuous(labels = scales::percent) +
-  labs(title = 'Overall Skill x Genders',
+  labs(title = 'Overall Skill x Gender',
        x = 'Overall Skill',
        y = 'Distribution (%)',
-       fill = 'Genders') +
-  scale_fill_manual(
-    name = "Gender",
-    values = c(
-      "Male" = "#C7DBFF",    # pastel blue
-      "Female" = "#FFB6C1"   # pastel pink
-    )
-  ) +
+       fill = 'Gender') +
+  scale_fill_viridis_d() +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5, face = "bold", size=14),
+  theme(plot.title = element_text(hjust = "0.5",face = "bold", size=14),
         strip.background = element_rect(fill = 'white'),
         legend.position  = 'right')
