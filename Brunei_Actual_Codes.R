@@ -553,8 +553,9 @@ f %>%
        x = 'Overall Skill',
        y = 'Distribution (%)',
        fill = 'Gender') +
-  scale_fill_viridis_d() +
+  scale_fill_manual(values = c("MALE" = "#1f77b4", 
+                               "FEMALE" = "#ff69b4")) +  # <-- Your custom colours
   theme_bw() +
-  theme(plot.title = element_text(hjust = "0.5",face = "bold", size=14),
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
         strip.background = element_rect(fill = 'white'),
         legend.position  = 'right')
