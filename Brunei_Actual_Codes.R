@@ -282,25 +282,35 @@ svymean(~AIndex_SFY,bruneidesign_ind24)
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
-bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[, c("AIndex_CC", "AIndex_DCC", "AIndex_IDL", "AIndex_PS", "AIndex_SFY")],
-                                             1,
-                                             function(x) length(which(x=="None")))
-#table(bruneidesign_ind24$variables$auxskill)
+# Recode skill domain levels to numeric for logic processing:
+# "None" = 0, "Basic" = 1, "Above basic" = 2
 
-bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$auxskill==0,1,
-                                           ifelse(bruneidesign_ind24$variables$auxskill==1,2,
-                                                  ifelse(((bruneidesign_ind24$variables$auxskill>1)),3,0
-                                                  )))
+bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
+  mutate(across(starts_with("AIndex_"),
+                ~ case_when(
+                  . == "None" ~ 0,
+                  . == "Basic" ~ 1,
+                  . == "Above basic" ~ 2,
+                  TRUE ~ NA_real_
+                )))
 
+# Now classify overall digital skill level per your logic
+bruneidesign_ind24$variables$Skill <- apply(bruneidesign_ind24$variables[, c("AIndex_CC", "AIndex_DCC", "AIndex_IDL", "AIndex_PS", "AIndex_SFY")],
+                                            1,
+                                            function(row) {
+                                              if (any(row == 0)) {
+                                                return("None")
+                                              } else if (all(row >= 2)) {
+                                                return("Above basic")
+                                              } else {
+                                                return("Basic")
+                                              }
+                                            })
 
+# Convert to factor with ordering
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
-                                             levels = c(1,2,3),                      
-                                             labels =  c('None',
-                                                         'Basic',
-                                                         'Above basic'
-                                             ),
-                                             ordered = T)
-#table(bruneidesign_ind24$variables$Skill)
+                                             levels = c("None", "Basic", "Above basic"),
+                                             ordered = TRUE)
 
 # Sector charts (pie charts) for skill classes
 #-------------------------------------------------------------------------------
