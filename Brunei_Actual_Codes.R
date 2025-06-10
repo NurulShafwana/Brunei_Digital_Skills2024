@@ -520,7 +520,7 @@ df_male <- get_skill_means("MALE")
 df_female <- get_skill_means("FEMALE")
 
 # Combine and clean
-f <- bind_rows(df_male, df_female) %>%
+g <- bind_rows(df_male, df_female) %>%
   mutate(
     measure = case_when(
       measure == "skill_below" ~ "At least basic level of skills",
@@ -537,7 +537,7 @@ f <- bind_rows(df_male, df_female) %>%
 
 #-------------------------------------------------------------------------------
 # Generating barplot
-f %>% 
+g %>% 
   mutate(GEN = forcats::fct_reorder(GEN, values, .desc = F)) %>% 
   ggplot(aes(y = values, 
              fill = GEN,
