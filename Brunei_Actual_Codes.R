@@ -451,7 +451,6 @@ f %>%
 # Generating survey mean objects for overall skill indicator
 a <- svymean(~Skill, bruneidesign_ind24)
 
-
 # Converting survey mean in tibble, extracting and formatting labels and mean
 a <- tibble(
   labels_cat = substring(names(a), 6),
