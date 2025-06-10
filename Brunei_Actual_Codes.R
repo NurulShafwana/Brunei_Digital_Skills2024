@@ -295,9 +295,9 @@ bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$auxskill
 
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
                                              levels = c(1,2,3),                      
-                                             labels =  c('At least basic level of skills',
-                                                         'Skills in 2-3 out of 5 areas',
-                                                         'Skills in 4-5 out of 5 areas'
+                                             labels =  c('None',
+                                                         'Basic',
+                                                         'Above basic'
                                              ),
                                              ordered = T)
 #table(bruneidesign_ind24$variables$Skill)
@@ -471,9 +471,9 @@ a %>%
   scale_fill_manual(
     name = "Skill level",
     values = c(
-      "At least basic level of skills"   = "#FFB6C1",    # None
-      "Skills in 2-3 out of 5 areas"         = "#C7DBFF",   # Basic
-      "Skills in 4-5 out of 5 areas" = "#B1E5D3"   # Above basic
+      "None"   = "#FFB6C1",    # None
+      "Basic"         = "#C7DBFF",   # Basic
+      "Above basic" = "#B1E5D3"   # Above basic
     )
   )+
   labs(title = "Overall Skill",
@@ -496,9 +496,9 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "At least basic level of skills", 1, 0),
-    skill_basic = if_else(Skill == "Skills in 2-3 out of 5 areas", 1, 0),
-    skill_above = if_else(Skill == "Skills in 4-5 out of 5 areas", 1, 0)
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
   )
 
 # Compute skill means by gender
@@ -523,15 +523,15 @@ df_female <- get_skill_means("FEMALE")
 g <- bind_rows(df_male, df_female) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "At least basic level of skills",
-      measure == "skill_basic" ~ "Skills in 2-3 out of 5 areas",
-      measure == "skill_above" ~ "Skills in 4-5 out of 5 areas"
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("At least basic level of skills",
-                                "Skills in 2-3 out of 5 areas",
-                                "Skills in 4-5 out of 5 areas"),
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
                      ordered = TRUE)
   )
 
