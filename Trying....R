@@ -23,8 +23,9 @@ install.load::install_load("haven",
 
 ### BEFORE running these codes, make sure the Rdata of bruneidesign_ind24 is already in Environment
 
-# A. Communication and Collaboration
-###   Digital Skill                                                         Database variable
+
+###   Digital Skill
+# A. Communication and Collaboration                                    Database variable
 
 ## 1. Participating in social networks (including social media) 	            CC1
 ## 2. Making calls over the internet or messaging apps                        CC2
@@ -51,8 +52,8 @@ bruneidesign_ind24$variables$CC <- bruneidesign_ind24$variables$CC1 +
 # Otherwise, set it to 0.
 
 
-# B. Digital content creation
-###   Digital Skill                                            Database variable
+###   Digital Skill
+# B. Digital content creation                                   Database variable
 
 ## 1. Creating electronic presentations 	                           DCC1
 ## 2. Writing a computer program 	                                   DCC2
@@ -76,8 +77,8 @@ bruneidesign_ind24$variables$DCC <- bruneidesign_ind24$variables$DCC1 +
   bruneidesign_ind24$variables$DCC6
 
 
-# C. Information and Data Literacy
-###   Digital Skill                                               Database variable
+### Digital SKill
+# C. Information and Data Literacy                                 Database variable
 
 ## 1. Reading or downloading newspapers, magazines or books	            IDL1    
 ## 2. Getting information about goods or services	                      IDL2
@@ -98,8 +99,8 @@ bruneidesign_ind24$variables$IDL <- bruneidesign_ind24$variables$IDL1 +
 #table(bruneidesign_ind24$variables$IDL)
 
 
-# D. Problem Solving
-###   Digital Skill                                                      Database variable
+### Digital Skill
+# D. Problem Solving                                                      Database variable
 
 ## 1. Finding, downloading, installing and configuring software & apps 	      PS1
 ## 2. Transferring files or applications between devices 	                    PS2
@@ -122,8 +123,8 @@ bruneidesign_ind24$variables$PS <- bruneidesign_ind24$variables$PS1 +
   bruneidesign_ind24$variables$PS5 +
   bruneidesign_ind24$variables$PS6
 
-# E. Safety
-###   Digital Skill                                                           Database variable
+### Digital Skill
+# E. Safety                                                                  Database variable
 
 ## 1. Changing privacy setting on device, account or app 	                          SFY1
 ## 2. Setting up effective security measures to protect devices & accounts 	        SFY2
@@ -296,6 +297,11 @@ svymean(~AIndex_DCC,bruneidesign_ind24)
 svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY,bruneidesign_ind24)
+
+
+# The first part assigns clear, readable labels to each digital skill variable. 
+# The second part calculates the proportion of the population 
+# that has each skill using weighted survey data.
 
 
 # ### Calculating an overall skill level ### #
