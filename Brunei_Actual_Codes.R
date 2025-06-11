@@ -9,17 +9,6 @@ install.load::install_load("haven",
                            "readxl",
                            "expss",
                            "formattable")
-# Install packages and load the packages to be used
-if (!require("install.load")) install.packages("install.load")
-install.load::install_load("haven",
-                           "tidyverse",
-                           "survey",
-                           "openxlsx",
-                           "MASS",
-                           "labelled",
-                           "readxl",
-                           "expss",
-                           "formattable")
 
 ### BEFORE running these codes, make sure the Rdata of bruneidesign_ind24 is already in Environment
 
@@ -278,7 +267,7 @@ svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY,bruneidesign_ind24)
 
-
+# ============================================================================ #
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
@@ -312,33 +301,64 @@ bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
                                              levels = c("None", "Basic", "Above basic"),
                                              ordered = TRUE)
 
+# ============================================================================ #
 # Sector charts (pie charts) for skill classes
 #-------------------------------------------------------------------------------
-# Generating survey means objects for each Skills class
-b <- svymean(~AIndex_CC,bruneidesign_ind24)
-c <- svymean(~AIndex_DCC,bruneidesign_ind24)
-d <- svymean(~AIndex_IDL,bruneidesign_ind24)
-e <- svymean(~AIndex_PS,bruneidesign_ind24)
-f <- svymean(~AIndex_SFY,bruneidesign_ind24)
+bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
+  mutate(
+    AIndex_CC_cat = factor(AIndex_CC,
+                           levels = c(0, 1, 2),
+                           labels = c("None", "Basic", "Above basic")),
+    AIndex_DCC_cat = factor(AIndex_DCC,
+                            levels = c(0, 1, 2),
+                            labels = c("None", "Basic", "Above basic")),
+    AIndex_IDL_cat = factor(AIndex_IDL,
+                            levels = c(0, 1, 2),
+                            labels = c("None", "Basic", "Above basic")),
+    AIndex_PS_cat = factor(AIndex_PS,
+                           levels = c(0, 1, 2),
+                           labels = c("None", "Basic", "Above basic")),
+    AIndex_SFY_cat = factor(AIndex_SFY,
+                            levels = c(0, 1, 2),
+                            labels = c("None", "Basic", "Above basic"))
+  )
 
-# Converting survey means in tibbles, extracting and formatting labels and means
-# mutate(labels_cat = substring(names(b), 10)) means extracting the 10th letter from AIndex_CC
-# mutate(labels_cat = substring(names(b), 10)) means extracting the 11th letter from AIndex_DCC
-b <- as_tibble(b) %>% 
-  mutate(labels_cat = substring(names(b), 10),
-         mean = formattable::percent(mean, digits = 1))
-c <- as_tibble(c) %>% 
-  mutate(labels_cat = substring(names(c), 11),
-         mean = formattable::percent(mean, digits = 1))
-d <- as_tibble(d) %>% 
-  mutate(labels_cat = substring(names(d), 11),
-         mean = formattable::percent(mean, digits = 1))
-e <- as_tibble(e) %>% 
-  mutate(labels_cat = substring(names(e), 10),
-         mean = formattable::percent(mean, digits = 1))
-f <- as_tibble(f) %>% 
-  mutate(labels_cat = substring(names(f), 11),
-         mean = formattable::percent(mean, digits = 1))
+# # Generating survey means objects for each Skills class
+# b <- svymean(~AIndex_CC,bruneidesign_ind24)
+# c <- svymean(~AIndex_DCC,bruneidesign_ind24)
+# d <- svymean(~AIndex_IDL,bruneidesign_ind24)
+# e <- svymean(~AIndex_PS,bruneidesign_ind24)
+# f <- svymean(~AIndex_SFY,bruneidesign_ind24)
+# svymean cannot be used - due to non-numerics so need to change first
+
+# Update with numeric indicators (0/1) for all categories
+bruneidesign_ind24 <- update(bruneidesign_ind24,
+                             None_num = as.numeric(AIndex_CC_cat == "None"),
+                             Basic_num = as.numeric(AIndex_CC_cat == "Basic"),
+                             Above_basic_num = as.numeric(AIndex_CC_cat == "Above basic"))
+
+# Calculate proportions (means) for each
+b <- svymean(~None_num + Basic_num + Above_basic_num, bruneidesign_ind24)
+
+# Prepare tidy table for each
+b_df <- data.frame(
+  labels_cat = names(coef(b)),
+  prop = coef(b),
+  SE = sqrt(diag(vcov(b)))
+)
+
+b <- as_tibble(b_df) %>%
+  mutate(
+    labels_cat = case_when(
+      grepl("None_num", labels_cat) ~ "None",
+      grepl("Basic_num", labels_cat) ~ "Basic",
+      grepl("Above_basic_num", labels_cat) ~ "Above basic",
+      TRUE ~ "Other"
+    ),
+    mean = formattable::percent(prop, digits = 1),
+    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+  )
+
 
 ggplot2::theme_set(theme_bw() +
                      theme(axis.text.x=element_blank(),
@@ -354,25 +374,18 @@ ggplot2::theme_set(theme_bw() +
 
 # Generating charts for each skill class
 ## b for CC
-b %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) +
+b %>%
+  ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_label(aes(label = mean, group = labels_cat),
+             fill = "white", colour = "black",
+             position = position_fill(vjust = 0.5)) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None" = "#FFB6C1",         
-      "Basic" = "#C7DBFF",       
-      "Above basic" = "#B1E5D3"   
-    )
-  )+
-  labs(title = "Communication & Collaboration",
-       fill  = 'Skill level') 
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(title = "Communication & Collaboration")
 
 ## c is for DCC
 c %>% 
@@ -488,7 +501,7 @@ a %>%
   labs(title = "Overall Skill",
        fill  = 'Skill level')
 
-
+# ============================================================================ #
 # Barplot for skill classes by Genders
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
