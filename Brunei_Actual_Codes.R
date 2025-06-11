@@ -333,12 +333,45 @@ bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
 
 # Update with numeric indicators (0/1) for all categories
 bruneidesign_ind24 <- update(bruneidesign_ind24,
-                             None_num = as.numeric(AIndex_CC_cat == "None"),
-                             Basic_num = as.numeric(AIndex_CC_cat == "Basic"),
-                             Above_basic_num = as.numeric(AIndex_CC_cat == "Above basic"))
+                             # AIndex_CC
+                             None_num_CC         = as.numeric(AIndex_CC_cat == "None"),
+                             Basic_num_CC        = as.numeric(AIndex_CC_cat == "Basic"),
+                             Above_basic_num_CC  = as.numeric(AIndex_CC_cat == "Above basic"),
+                             
+                             # AIndex_DCC
+                             None_num_DCC         = as.numeric(AIndex_DCC_cat == "None"),
+                             Basic_num_DCC        = as.numeric(AIndex_DCC_cat == "Basic"),
+                             Above_basic_num_DCC  = as.numeric(AIndex_DCC_cat == "Above basic"),
+                             
+                             # AIndex_IDL
+                             None_num_IDL         = as.numeric(AIndex_IDL_cat == "None"),
+                             Basic_num_IDL        = as.numeric(AIndex_IDL_cat == "Basic"),
+                             Above_basic_num_IDL  = as.numeric(AIndex_IDL_cat == "Above basic"),
+                             
+                             # AIndex_PS
+                             None_num_PS         = as.numeric(AIndex_PS_cat == "None"),
+                             Basic_num_PS        = as.numeric(AIndex_PS_cat == "Basic"),
+                             Above_basic_num_PS  = as.numeric(AIndex_PS_cat == "Above basic"),
+                             
+                             # AIndex_SFY
+                             None_num_SFY         = as.numeric(AIndex_SFY_cat == "None"),
+                             Basic_num_SFY        = as.numeric(AIndex_SFY_cat == "Basic"),
+                             Above_basic_num_SFY  = as.numeric(AIndex_SFY_cat == "Above basic")
+)
+
+
 
 # Calculate proportions (means) for each
-b <- svymean(~None_num + Basic_num + Above_basic_num, bruneidesign_ind24)
+b <- svymean(~None_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
+
+c <- svymean(~None_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
+
+d <- svymean(~None_num_IDL + Basic_num_IDL + Above_basic_num_IDL, bruneidesign_ind24)
+
+e <- svymean(~None_num_PS + Basic_num_PS + Above_basic_num_PS, bruneidesign_ind24)
+
+f <- svymean(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_ind24)
+
 
 # Prepare tidy table for each
 b_df <- data.frame(
@@ -350,14 +383,94 @@ b_df <- data.frame(
 b <- as_tibble(b_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num", labels_cat) ~ "None",
-      grepl("Basic_num", labels_cat) ~ "Basic",
-      grepl("Above_basic_num", labels_cat) ~ "Above basic",
+      grepl("None_num_CC", labels_cat) ~ "None",
+      grepl("Basic_num_CC", labels_cat) ~ "Basic",
+      grepl("Above_basic_num_CC", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
     mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
+
+
+
+c_df <- data.frame(
+  labels_cat = names(coef(c)),
+  prop = coef(c),
+  SE = sqrt(diag(vcov(c)))
+)
+
+c <- as_tibble(c_df) %>%
+  mutate(
+    labels_cat = case_when(
+      grepl("None_num_DCC", labels_cat) ~ "None",
+      grepl("Basic_num_DCC", labels_cat) ~ "Basic",
+      grepl("Above_basic_num_DCC", labels_cat) ~ "Above basic",
+      TRUE ~ "Other"
+    ),
+    mean = formattable::percent(prop, digits = 1),
+    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+  )
+
+
+
+
+d_df <- data.frame(
+  labels_cat = names(coef(d)),
+  prop = coef(d),
+  SE = sqrt(diag(vcov(d)))
+)
+
+d <- as_tibble(d_df) %>%
+  mutate(
+    labels_cat = case_when(
+      grepl("None_num_IDL", labels_cat) ~ "None",
+      grepl("Basic_num_IDL", labels_cat) ~ "Basic",
+      grepl("Above_basic_num_IDL", labels_cat) ~ "Above basic",
+      TRUE ~ "Other"
+    ),
+    mean = formattable::percent(prop, digits = 1),
+    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+  )
+
+
+e_df <- data.frame(
+  labels_cat = names(coef(e)),
+  prop = coef(e),
+  SE = sqrt(diag(vcov(e)))
+)
+
+e <- as_tibble(e_df) %>%
+  mutate(
+    labels_cat = case_when(
+      grepl("None_num_PS", labels_cat) ~ "None",
+      grepl("Basic_num_PS", labels_cat) ~ "Basic",
+      grepl("Above_basic_num_PS", labels_cat) ~ "Above basic",
+      TRUE ~ "Other"
+    ),
+    mean = formattable::percent(prop, digits = 1),
+    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+  )
+
+f_df <- data.frame(
+  labels_cat = names(coef(f)),
+  prop = coef(f),
+  SE = sqrt(diag(vcov(f)))
+)
+
+f <- as_tibble(f_df) %>%
+  mutate(
+    labels_cat = case_when(
+      grepl("None_num_SFY", labels_cat) ~ "None",
+      grepl("Basic_num_SFY", labels_cat) ~ "Basic",
+      grepl("Above_basic_num_SFY", labels_cat) ~ "Above basic",
+      TRUE ~ "Other"
+    ),
+    mean = formattable::percent(prop, digits = 1),
+    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+  )
+
+
 
 
 ggplot2::theme_set(theme_bw() +
@@ -388,88 +501,60 @@ b %>%
   labs(title = "Communication & Collaboration")
 
 ## c is for DCC
-c %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) +
+c %>%
+  ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_label(aes(label = mean, group = labels_cat),
+             fill = "white", colour = "black",
+             position = position_fill(vjust = 0.5)) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None" = "#FFB6C1",         
-      "Basic" = "#C7DBFF",       
-      "Above basic" = "#B1E5D3"   
-    )
-  )+
-  labs(title = "Digital Content Creation",
-       fill  = 'Skill level')
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(title = "Digital Content Creation")
 
 ## d is for IDL
-d %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) + 
+d %>%
+  ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_label(aes(label = mean, group = labels_cat),
+             fill = "white", colour = "black",
+             position = position_fill(vjust = 0.5)) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None" = "#FFB6C1",         
-      "Basic" = "#C7DBFF",       
-      "Above basic" = "#B1E5D3"   
-    )
-  )+
-  labs(title = "Information and Data Literacy",
-       fill  = 'Skill level')
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(title = "Information and Data Literacy")
 
 ## e is for PS
-e %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) + 
+e %>%
+  ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_label(aes(label = mean, group = labels_cat),
+             fill = "white", colour = "black",
+             position = position_fill(vjust = 0.5)) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None" = "#FFB6C1",         
-      "Basic" = "#C7DBFF",       
-      "Above basic" = "#B1E5D3"   
-    )
-  )+
-  labs(title = "Problem solving",
-       fill  = 'Skill level')
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(title = "Problem Solving")
 
 ## f is for SFY
-f %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) + 
+f %>%
+  ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  geom_label(aes(label = mean, group = labels_cat),
+             fill = "white", colour = "black",
+             position = position_fill(vjust = 0.5)) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None" = "#FFB6C1",         
-      "Basic" = "#C7DBFF",       
-      "Above basic" = "#B1E5D3"   
-    )
-  )+
-  labs(title = "Safety",
-       fill  = 'Skill level')
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(title = "Safety")
 
 # Generating survey mean objects for overall skill indicator
 a <- svymean(~Skill, bruneidesign_ind24)
