@@ -377,9 +377,7 @@ f <- svymean(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_i
 b_df <- data.frame(
   labels_cat = names(coef(b)),
   prop = coef(b),
-  SE = sqrt(diag(vcov(b)))
-)
-
+  SE = sqrt(diag(vcov(b))))
 b <- as_tibble(b_df) %>%
   mutate(
     labels_cat = case_when(
@@ -392,14 +390,10 @@ b <- as_tibble(b_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-
 c_df <- data.frame(
   labels_cat = names(coef(c)),
   prop = coef(c),
-  SE = sqrt(diag(vcov(c)))
-)
-
+  SE = sqrt(diag(vcov(c))))
 c <- as_tibble(c_df) %>%
   mutate(
     labels_cat = case_when(
@@ -412,15 +406,10 @@ c <- as_tibble(c_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-
-
 d_df <- data.frame(
   labels_cat = names(coef(d)),
   prop = coef(d),
-  SE = sqrt(diag(vcov(d)))
-)
-
+  SE = sqrt(diag(vcov(d))))
 d <- as_tibble(d_df) %>%
   mutate(
     labels_cat = case_when(
@@ -433,13 +422,10 @@ d <- as_tibble(d_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
 e_df <- data.frame(
   labels_cat = names(coef(e)),
   prop = coef(e),
-  SE = sqrt(diag(vcov(e)))
-)
-
+  SE = sqrt(diag(vcov(e))))
 e <- as_tibble(e_df) %>%
   mutate(
     labels_cat = case_when(
@@ -455,9 +441,7 @@ e <- as_tibble(e_df) %>%
 f_df <- data.frame(
   labels_cat = names(coef(f)),
   prop = coef(f),
-  SE = sqrt(diag(vcov(f)))
-)
-
+  SE = sqrt(diag(vcov(f))))
 f <- as_tibble(f_df) %>%
   mutate(
     labels_cat = case_when(
@@ -470,9 +454,7 @@ f <- as_tibble(f_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-
-
+# setting ggplot for the pie charts theme
 ggplot2::theme_set(theme_bw() +
                      theme(axis.text.x=element_blank(),
                            axis.title.x = element_blank(),
@@ -482,8 +464,7 @@ ggplot2::theme_set(theme_bw() +
                            axis.ticks = element_blank(),
                            plot.title = element_text(hjust = "0.5",face = "bold", size=14),
                            strip.background = element_rect(fill = 'white'),
-                           legend.position  = 'right')
-)
+                           legend.position  = 'right'))
 
 # Generating charts for each skill class
 ## b for CC
@@ -564,6 +545,9 @@ a <- tibble(
   labels_cat = substring(names(a), 6),
   mean = formattable::percent(as.numeric(a), digits = 1)
 )
+
+# to make sure the skill levels from none, basic, above basic
+a$labels_cat <- factor(a$labels_cat, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
 
 # Generating chart for overall skill indicator
 a %>% 
