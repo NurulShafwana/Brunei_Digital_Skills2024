@@ -515,9 +515,9 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "At least basic level of skills", 1, 0),
-    skill_basic = if_else(Skill == "Skills in 2-3 out of 5 areas", 1, 0),
-    skill_above = if_else(Skill == "Skills in 4-5 out of 5 areas", 1, 0)
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
   )
 
 # Compute skill means by gender
@@ -539,24 +539,24 @@ df_male <- get_skill_means("MALE")
 df_female <- get_skill_means("FEMALE")
 
 # Combine and clean
-f <- bind_rows(df_male, df_female) %>%
+g <- bind_rows(df_male, df_female) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "At least basic level of skills",
-      measure == "skill_basic" ~ "Skills in 2-3 out of 5 areas",
-      measure == "skill_above" ~ "Skills in 4-5 out of 5 areas"
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("At least basic level of skills",
-                                "Skills in 2-3 out of 5 areas",
-                                "Skills in 4-5 out of 5 areas"),
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
                      ordered = TRUE)
   )
 
 #-------------------------------------------------------------------------------
 # Generating barplot
-f %>% 
+g %>% 
   mutate(GEN = forcats::fct_reorder(GEN, values, .desc = F)) %>% 
   ggplot(aes(y = values, 
              fill = GEN,
@@ -590,11 +590,12 @@ f %>%
 # Barplot for skill classes by AREA
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
+# Include gender here, dont be sexist
 bruneidesign_ind24$variables$AREA <- haven::as_factor(bruneidesign_ind24$variables$AREA)
 bruneidesign_ind24$variables$AREA <- factor(bruneidesign_ind24$variables$AREA,
-                                            levels = c(1, 2),
-                                            labels = c("URBAN", "RURAL"),
-                                            ordered = TRUE)
+                                           levels = c(1, 2),
+                                           labels = c("URBAN", "RURAL"),
+                                           ordered = TRUE)
 # Filter out NA in Skill if any
 design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 
@@ -602,51 +603,48 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "At least basic level of skills", 1, 0),
-    skill_basic = if_else(Skill == "Skills in 2-3 out of 5 areas", 1, 0),
-    skill_above = if_else(Skill == "Skills in 4-5 out of 5 areas", 1, 0)
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
   )
 
 # Compute skill means by AREA
 #-------------------------------------------------------------------------------
 
-# Function to compute skill means by GEN
-get_skill_means <- function(area_value) {
-  sub <- subset(design_filtered, AREA == area_value)
+# Function to compute skill means by AREA
+get_skill_means <- function(urban_value) {
+  sub <- subset(design_filtered, AREA == urban_value)
   means <- svymean(~skill_below + skill_basic + skill_above, sub)
   data.frame(
-    AREA = area_value,
+    AREA = urban_value,
     measure = names(means),
     values = coef(means)
   )
 }
 
-# Apply to both areas
+# Apply to both AREAS
 df_urban <- get_skill_means("URBAN")
 df_rural <- get_skill_means("RURAL")
 
 # Combine and clean
-f <- bind_rows(df_urban, df_rural) %>%
+g <- bind_rows(df_urban, df_rural) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "At least basic level of skills",
-      measure == "skill_basic" ~ "Skills in 2-3 out of 5 areas",
-      measure == "skill_above" ~ "Skills in 4-5 out of 5 areas"
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
     ),
-    # Keep values numeric for plotting
-    # Create formatted percent label for geom_label
-    percent_label = scales::percent(values, accuracy = 1),
+    values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("At least basic level of skills",
-                                "Skills in 2-3 out of 5 areas",
-                                "Skills in 4-5 out of 5 areas"),
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
                      ordered = TRUE)
   )
 
-
 #-------------------------------------------------------------------------------
 # Generating barplot
-f %>% 
+g %>% 
   mutate(AREA = forcats::fct_reorder(AREA, values, .desc = F)) %>% 
   ggplot(aes(y = values, 
              fill = AREA,
@@ -682,9 +680,9 @@ f %>%
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
     combo = paste(GEN, AREA, sep = " - "),
-    skill_below  = if_else(Skill == "At least basic level of skills", 1, 0),
-    skill_basic = if_else(Skill == "Skills in 2-3 out of 5 areas", 1, 0),
-    skill_above = if_else(Skill == "Skills in 4-5 out of 5 areas", 1, 0)
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
   )
 
 get_combo_means <- function(group_label) {
@@ -701,15 +699,15 @@ combo_levels <- unique(design_filtered$variables$combo)
 combo_data <- purrr::map_dfr(combo_levels, get_combo_means) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "At least basic level of skills",
-      measure == "skill_basic" ~ "Skills in 2-3 out of 5 areas",
-      measure == "skill_above" ~ "Skills in 4-5 out of 5 areas"
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
     ),
     percent_label = scales::percent(values, accuracy = 1),
     measure = factor(measure,
-                     levels = c("At least basic level of skills",
-                                "Skills in 2-3 out of 5 areas",
-                                "Skills in 4-5 out of 5 areas"),
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
                      ordered = TRUE)
   )
 
