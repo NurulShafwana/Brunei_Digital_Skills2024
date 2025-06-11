@@ -154,6 +154,8 @@ bruneidesign_ind24$variables$AIndex_CC <- factor(bruneidesign_ind24$variables$AI
                                                              'Above basic'),
                                                  ordered = T)
 
+#edit label from 'None' to 'Below Basic'
+
 ### B. DCC - Digital content creation
 bruneidesign_ind24$variables$AIndex_DCC<-ifelse((bruneidesign_ind24$variables$DCC2+
                                                    bruneidesign_ind24$variables$DCC3+
