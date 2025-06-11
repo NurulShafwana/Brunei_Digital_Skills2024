@@ -11,7 +11,7 @@ library(readxl)
 library(survey)
 
 # Read excel file
-mydata <- read_excel("Brunei Digital Skills 2024.xlsx")
+mydata <- read_excel("Brunei Digital Skills 2024 part2.xlsx")
 
 # Check if data is correct - not necessary to do
 head(mydata)
