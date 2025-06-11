@@ -575,7 +575,6 @@ a %>%
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
 # Include gender here, dont be sexist
-bruneidesign_ind24$variables$GEN <- haven::as_factor(bruneidesign_ind24$variables$GEN)
 bruneidesign_ind24$variables$GEN <- factor(bruneidesign_ind24$variables$GEN,
                                            levels = c(1, 2),
                                            labels = c("MALE", "FEMALE"),
