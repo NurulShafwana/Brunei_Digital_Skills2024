@@ -915,3 +915,112 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
 
 
 
+
+
+
+
+
+
+# Barplot for skill classes by OCCUPATION
+#-------------------------------------------------------------------------------
+# Labeling workforce status categories and variable
+
+bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
+
+bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
+                                            levels = c(1:10, 0),
+                                            labels = c("Manager",
+                                                       "Professional",
+                                                       "Technician and associate professional",
+                                                       "Clerical support worker",
+                                                       "Services and sales worker",
+                                                       "Skilled agricultural, forestry and fishery worker",
+                                                       "Craft and related trades worker",
+                                                       "Plant/machine operators and assemblers",
+                                                       "Elementary occupations",
+                                                       "Armed forces",
+                                                       "Blank/Not stated"),
+                                            ordered = FALSE)
+
+
+design_filtered_occ <- subset(design_filtered, !is.na(Skill) & OCC != "Blank/Not stated")
+
+
+install.packages("srvyr")
+
+library(srvyr)
+
+# Convert to srvyr object for tidy syntax
+survey_tbl <- as_survey_design(design_filtered_occ)
+
+# Summarize skill levels by Gender and Occupation
+skill_occ_gender <- survey_tbl %>%
+  group_by(GEN, OCC, Skill) %>%
+  summarize(p = survey_mean(vartype = "ci", na.rm = TRUE)) %>%
+  ungroup()
+
+
+ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
+  labs(
+    title = "Digital Skill Levels by Occupation and Gender",
+    x = "Overall Digital Skill",
+    y = "Percentage",
+    fill = "Gender"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+
+
+# Save plot to a variable called skill_plot
+skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
+  labs(
+    title = "Digital Skill Levels by Occupation and Gender",
+    x = "Overall Digital Skill",
+    y = "Percentage",
+    fill = "Gender"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+
+
+
+# First, save your plot to a variable
+my_plot <- ggplot(data, aes(...)) +
+  geom_bar(...) +
+  labs(title = "Your Plot Title")
+
+
+# Then save it with a full file path and custom dimensions (in inches)
+ggsave("C:/Users/hamizah.hamzah/OneDrive - AITI/Brunei Digital Skills 2024/Brunei_Digital_Skills2024/Digital_Skills_Levels_by_Occupation_and_Gender.png",
+       plot = skill_plot,
+       width = 12,      # wider
+       height = 8,      # taller
+       dpi = 300)       # high quality (dots per inch)
+
+
+
+
+
+
+
+
