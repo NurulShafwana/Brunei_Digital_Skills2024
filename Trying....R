@@ -299,9 +299,7 @@ svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY,bruneidesign_ind24)
 
 
-# The first part assigns clear, readable labels to each digital skill variable. 
-# The second part calculates the proportion of the population 
-# that has each skill using weighted survey data.
+
 
 
 # ### Calculating an overall skill level ### #
