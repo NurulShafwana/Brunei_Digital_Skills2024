@@ -23,9 +23,8 @@ install.load::install_load("haven",
 
 ### BEFORE running these codes, make sure the Rdata of bruneidesign_ind24 is already in Environment
 
-
-###   Digital Skill
-# A. Communication and Collaboration                                    Database variable
+# A. Communication and Collaboration
+###   Digital Skill                                                         Database variable
 
 ## 1. Participating in social networks (including social media) 	            CC1
 ## 2. Making calls over the internet or messaging apps                        CC2
@@ -52,8 +51,9 @@ bruneidesign_ind24$variables$CC <- bruneidesign_ind24$variables$CC1 +
 # Otherwise, set it to 0.
 
 
-###   Digital Skill
-# B. Digital content creation                                   Database variable
+
+# B. Digital content creation
+###   Digital Skill                                            Database variable
 
 ## 1. Creating electronic presentations 	                           DCC1
 ## 2. Writing a computer program 	                                   DCC2
@@ -77,8 +77,8 @@ bruneidesign_ind24$variables$DCC <- bruneidesign_ind24$variables$DCC1 +
   bruneidesign_ind24$variables$DCC6
 
 
-### Digital SKill
-# C. Information and Data Literacy                                 Database variable
+# C. Information and Data Literacy
+###   Digital Skill                                               Database variable
 
 ## 1. Reading or downloading newspapers, magazines or books	            IDL1    
 ## 2. Getting information about goods or services	                      IDL2
@@ -99,8 +99,8 @@ bruneidesign_ind24$variables$IDL <- bruneidesign_ind24$variables$IDL1 +
 #table(bruneidesign_ind24$variables$IDL)
 
 
-### Digital Skill
-# D. Problem Solving                                                      Database variable
+# D. Problem Solving
+###   Digital Skill                                                      Database variable
 
 ## 1. Finding, downloading, installing and configuring software & apps 	      PS1
 ## 2. Transferring files or applications between devices 	                    PS2
@@ -123,8 +123,8 @@ bruneidesign_ind24$variables$PS <- bruneidesign_ind24$variables$PS1 +
   bruneidesign_ind24$variables$PS5 +
   bruneidesign_ind24$variables$PS6
 
-### Digital Skill
-# E. Safety                                                                  Database variable
+# E. Safety
+###   Digital Skill                                                           Database variable
 
 ## 1. Changing privacy setting on device, account or app 	                          SFY1
 ## 2. Setting up effective security measures to protect devices & accounts 	        SFY2
@@ -298,32 +298,45 @@ svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY,bruneidesign_ind24)
 
-
+# These lines calculate the average (mean) proportion of each skill level category 
+# (like Communication & Collaboration, Digital Content Creation, etc.) 
+# in the survey dataset, taking the survey’s complex design into account. 
+# Essentially, they show how common each skill level is across the population surveyed.
 
 
 
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
 
-bruneidesign_ind24$variables$auxskill<-apply(bruneidesign_ind24$variables[, c("AIndex_CC", "AIndex_DCC", "AIndex_IDL", "AIndex_PS", "AIndex_SFY")],
-                                             1,
-                                             function(x) length(which(x=="None")))
-#table(bruneidesign_ind24$variables$auxskill)
+# Recode skill domain levels to numeric for logic processing:
+# "None" = 0, "Basic" = 1, "Above basic" = 2
 
-bruneidesign_ind24$variables$Skill<-ifelse(bruneidesign_ind24$variables$auxskill==0,1,
-                                           ifelse(bruneidesign_ind24$variables$auxskill==1,2,
-                                                  ifelse(((bruneidesign_ind24$variables$auxskill>1)),3,0
-                                                  )))
+bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
+  mutate(across(starts_with("AIndex_"),
+                ~ case_when(
+                  . == "None" ~ 0,
+                  . == "Basic" ~ 1,
+                  . == "Above basic" ~ 2,
+                  TRUE ~ NA_real_
+                )))
 
+# Now classify overall digital skill level per your logic
+bruneidesign_ind24$variables$Skill <- apply(bruneidesign_ind24$variables[, c("AIndex_CC", "AIndex_DCC", "AIndex_IDL", "AIndex_PS", "AIndex_SFY")],
+                                            1,
+                                            function(row) {
+                                              if (any(row == 0)) {
+                                                return("None")
+                                              } else if (all(row >= 2)) {
+                                                return("Above basic")
+                                              } else {
+                                                return("Basic")
+                                              }
+                                            })
 
+# Convert to factor with ordering
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
-                                             levels = c(1,2,3),                      
-                                             labels =  c('At least basic level of skills',
-                                                         'Skills in 2-3 out of 5 areas',
-                                                         'Skills in 4-5 out of 5 areas'
-                                             ),
-                                             ordered = T)
-#table(bruneidesign_ind24$variables$Skill)
+                                             levels = c("None", "Basic", "Above basic"),
+                                             ordered = TRUE)
 
 # Sector charts (pie charts) for skill classes
 #-------------------------------------------------------------------------------
@@ -333,6 +346,18 @@ c <- svymean(~AIndex_DCC,bruneidesign_ind24)
 d <- svymean(~AIndex_IDL,bruneidesign_ind24)
 e <- svymean(~AIndex_PS,bruneidesign_ind24)
 f <- svymean(~AIndex_SFY,bruneidesign_ind24)
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Converting survey means in tibbles, extracting and formatting labels and means
 # mutate(labels_cat = substring(names(b), 10)) means extracting the 10th letter from AIndex_CC
@@ -474,7 +499,6 @@ f %>%
 # Generating survey mean objects for overall skill indicator
 a <- svymean(~Skill, bruneidesign_ind24)
 
-
 # Converting survey mean in tibble, extracting and formatting labels and mean
 a <- tibble(
   labels_cat = substring(names(a), 6),
@@ -494,9 +518,9 @@ a %>%
   scale_fill_manual(
     name = "Skill level",
     values = c(
-      "At least basic level of skills"   = "#FFB6C1",    # None
-      "Skills in 2-3 out of 5 areas"         = "#C7DBFF",   # Basic
-      "Skills in 4-5 out of 5 areas" = "#B1E5D3"   # Above basic
+      "None"   = "#FFB6C1",    # None
+      "Basic"         = "#C7DBFF",   # Basic
+      "Above basic" = "#B1E5D3"   # Above basic
     )
   )+
   labs(title = "Overall Skill",
