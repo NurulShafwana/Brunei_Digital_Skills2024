@@ -1,5 +1,3 @@
-#hellO
-
 # Install packages and load the packages to be used
 if (!require("install.load")) install.packages("install.load")
 install.load::install_load("haven",
