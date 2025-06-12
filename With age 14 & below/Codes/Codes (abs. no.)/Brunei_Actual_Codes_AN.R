@@ -147,12 +147,12 @@ bruneidesign_ind24$variables$AIndex_CC<-ifelse((bruneidesign_ind24$variables$CC2
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_CC <- factor(bruneidesign_ind24$variables$AIndex_CC,
                                                  levels = c(0,1,2),                      
-                                                 labels =  c('None',
+                                                 labels =  c('Below basic',
                                                              'Basic',
                                                              'Above basic'),
                                                  ordered = T)
 
-#edit label from 'None' to 'Below Basic'
+#edit label from 'Below basic' to 'Below Basic'
 
 ### B. DCC - Digital content creation
 bruneidesign_ind24$variables$AIndex_DCC<-ifelse((bruneidesign_ind24$variables$DCC2+
@@ -177,7 +177,7 @@ bruneidesign_ind24$variables$AIndex_DCC<-ifelse((bruneidesign_ind24$variables$DC
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_DCC <- factor(bruneidesign_ind24$variables$AIndex_DCC,
                                                   levels = c(0,1,2),                      
-                                                  labels =  c('None',
+                                                  labels =  c('Below basic',
                                                               'Basic',
                                                               'Above basic'),
                                                   ordered = T)
@@ -200,7 +200,7 @@ bruneidesign_ind24$variables$AIndex_IDL<-ifelse((bruneidesign_ind24$variables$ID
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_IDL <- factor(bruneidesign_ind24$variables$AIndex_IDL,
                                                   levels = c(0,1,2),                      
-                                                  labels =  c('None',
+                                                  labels =  c('Below basic',
                                                               'Basic',
                                                               'Above basic'),
                                                   ordered = T)
@@ -229,7 +229,7 @@ bruneidesign_ind24$variables$AIndex_PS<-ifelse((bruneidesign_ind24$variables$PS2
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_PS <- factor(bruneidesign_ind24$variables$AIndex_PS,
                                                  levels = c(0,1,2),                      
-                                                 labels =  c('None',
+                                                 labels =  c('Below basic',
                                                              'Basic',
                                                              'Above basic'
                                                  ),
@@ -247,7 +247,7 @@ bruneidesign_ind24$variables$AIndex_SFY<-ifelse((bruneidesign_ind24$variables$SF
 # Factoring and labelling skills proeficiency 
 bruneidesign_ind24$variables$AIndex_SFY <- factor(bruneidesign_ind24$variables$AIndex_SFY,
                                                   levels = c(0,1,2),                      
-                                                  labels =  c('None',
+                                                  labels =  c('Below basic',
                                                               'Basic',
                                                               'Above basic'
                                                   ),
@@ -274,12 +274,12 @@ svytotal(~AIndex_SFY,bruneidesign_ind24)
 #-------------------------------------------------------------------------------
 
 # Recode skill domain levels to numeric for logic processing:
-# "None" = 0, "Basic" = 1, "Above basic" = 2
+# "Below basic" = 0, "Basic" = 1, "Above basic" = 2
 
 bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
   mutate(across(starts_with("AIndex_"),
                 ~ case_when(
-                  . == "None" ~ 0,
+                  . == "Below basic" ~ 0,
                   . == "Basic" ~ 1,
                   . == "Above basic" ~ 2,
                   TRUE ~ NA_real_
@@ -290,7 +290,7 @@ bruneidesign_ind24$variables$Skill <- apply(bruneidesign_ind24$variables[, c("AI
                                             1,
                                             function(row) {
                                               if (any(row == 0)) {
-                                                return("None")
+                                                return("Below basic")
                                               } else if (all(row >= 2)) {
                                                 return("Above basic")
                                               } else {
@@ -300,7 +300,7 @@ bruneidesign_ind24$variables$Skill <- apply(bruneidesign_ind24$variables[, c("AI
 
 # Convert to factor with ordering
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
-                                             levels = c("None", "Basic", "Above basic"),
+                                             levels = c("Below basic", "Basic", "Above basic"),
                                              ordered = TRUE)
 
 # ============================================================================ #
@@ -310,19 +310,19 @@ bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
   mutate(
     AIndex_CC_cat = factor(AIndex_CC,
                            levels = c(0, 1, 2),
-                           labels = c("None", "Basic", "Above basic")),
+                           labels = c("Below basic", "Basic", "Above basic")),
     AIndex_DCC_cat = factor(AIndex_DCC,
                             levels = c(0, 1, 2),
-                            labels = c("None", "Basic", "Above basic")),
+                            labels = c("Below basic", "Basic", "Above basic")),
     AIndex_IDL_cat = factor(AIndex_IDL,
                             levels = c(0, 1, 2),
-                            labels = c("None", "Basic", "Above basic")),
+                            labels = c("Below basic", "Basic", "Above basic")),
     AIndex_PS_cat = factor(AIndex_PS,
                            levels = c(0, 1, 2),
-                           labels = c("None", "Basic", "Above basic")),
+                           labels = c("Below basic", "Basic", "Above basic")),
     AIndex_SFY_cat = factor(AIndex_SFY,
                             levels = c(0, 1, 2),
-                            labels = c("None", "Basic", "Above basic"))
+                            labels = c("Below basic", "Basic", "Above basic"))
   )
 
 # # Generating survey means objects for each Skills class
@@ -336,27 +336,27 @@ bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
 # Update with numeric indicators (0/1) for all categories
 bruneidesign_ind24 <- update(bruneidesign_ind24,
                              # AIndex_CC
-                             None_num_CC         = as.numeric(AIndex_CC_cat == "None"),
+                             Below_basic_num_CC         = as.numeric(AIndex_CC_cat == "Below basic"),
                              Basic_num_CC        = as.numeric(AIndex_CC_cat == "Basic"),
                              Above_basic_num_CC  = as.numeric(AIndex_CC_cat == "Above basic"),
                              
                              # AIndex_DCC
-                             None_num_DCC         = as.numeric(AIndex_DCC_cat == "None"),
+                             Below_basic_num_DCC         = as.numeric(AIndex_DCC_cat == "Below basic"),
                              Basic_num_DCC        = as.numeric(AIndex_DCC_cat == "Basic"),
                              Above_basic_num_DCC  = as.numeric(AIndex_DCC_cat == "Above basic"),
                              
                              # AIndex_IDL
-                             None_num_IDL         = as.numeric(AIndex_IDL_cat == "None"),
+                             Below_basic_num_IDL         = as.numeric(AIndex_IDL_cat == "Below basic"),
                              Basic_num_IDL        = as.numeric(AIndex_IDL_cat == "Basic"),
                              Above_basic_num_IDL  = as.numeric(AIndex_IDL_cat == "Above basic"),
                              
                              # AIndex_PS
-                             None_num_PS         = as.numeric(AIndex_PS_cat == "None"),
+                             Below_basic_num_PS         = as.numeric(AIndex_PS_cat == "Below basic"),
                              Basic_num_PS        = as.numeric(AIndex_PS_cat == "Basic"),
                              Above_basic_num_PS  = as.numeric(AIndex_PS_cat == "Above basic"),
                              
                              # AIndex_SFY
-                             None_num_SFY         = as.numeric(AIndex_SFY_cat == "None"),
+                             Below_basic_num_SFY         = as.numeric(AIndex_SFY_cat == "Below basic"),
                              Basic_num_SFY        = as.numeric(AIndex_SFY_cat == "Basic"),
                              Above_basic_num_SFY  = as.numeric(AIndex_SFY_cat == "Above basic")
 )
@@ -364,15 +364,15 @@ bruneidesign_ind24 <- update(bruneidesign_ind24,
 
 
 # Calculate proportions (means) for each
-b <- svytotal(~None_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
+b <- svytotal(~Below_basic_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
 
-c <- svytotal(~None_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
+c <- svytotal(~Below_basic_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
 
-d <- svytotal(~None_num_IDL + Basic_num_IDL + Above_basic_num_IDL, bruneidesign_ind24)
+d <- svytotal(~Below_basic_num_IDL + Basic_num_IDL + Above_basic_num_IDL, bruneidesign_ind24)
 
-e <- svytotal(~None_num_PS + Basic_num_PS + Above_basic_num_PS, bruneidesign_ind24)
+e <- svytotal(~Below_basic_num_PS + Basic_num_PS + Above_basic_num_PS, bruneidesign_ind24)
 
-f <- svytotal(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_ind24)
+f <- svytotal(~Below_basic_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_ind24)
 
 
 # Prepare tidy table for each
@@ -383,12 +383,12 @@ b_df <- data.frame(
 b <- as_tibble(b_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num_CC", labels_cat) ~ "None",
+      grepl("Below_basic_num_CC", labels_cat) ~ "Below basic",
       grepl("Basic_num_CC", labels_cat) ~ "Basic",
       grepl("Above_basic_num_CC", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+    labels_cat = factor(labels_cat, levels = c("Below basic", "Basic", "Above basic"))
   )
 
 c_df <- data.frame(
@@ -398,12 +398,12 @@ c_df <- data.frame(
 c <- as_tibble(c_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num_DCC", labels_cat) ~ "None",
+      grepl("Below_basic_num_DCC", labels_cat) ~ "Below basic",
       grepl("Basic_num_DCC", labels_cat) ~ "Basic",
       grepl("Above_basic_num_DCC", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+    labels_cat = factor(labels_cat, levels = c("Below basic", "Basic", "Above basic"))
   )
 
 d_df <- data.frame(
@@ -413,12 +413,12 @@ d_df <- data.frame(
 d <- as_tibble(d_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num_IDL", labels_cat) ~ "None",
+      grepl("Below_basic_num_IDL", labels_cat) ~ "Below basic",
       grepl("Basic_num_IDL", labels_cat) ~ "Basic",
       grepl("Above_basic_num_IDL", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+    labels_cat = factor(labels_cat, levels = c("Below basic", "Basic", "Above basic"))
   )
 
 e_df <- data.frame(
@@ -428,12 +428,12 @@ e_df <- data.frame(
 e <- as_tibble(e_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num_PS", labels_cat) ~ "None",
+      grepl("Below_basic_num_PS", labels_cat) ~ "Below basic",
       grepl("Basic_num_PS", labels_cat) ~ "Basic",
       grepl("Above_basic_num_PS", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+    labels_cat = factor(labels_cat, levels = c("Below basic", "Basic", "Above basic"))
   )
 
 f_df <- data.frame(
@@ -443,12 +443,12 @@ f_df <- data.frame(
 f <- as_tibble(f_df) %>%
   mutate(
     labels_cat = case_when(
-      grepl("None_num_SFY", labels_cat) ~ "None",
+      grepl("Below_basic_num_SFY", labels_cat) ~ "Below basic",
       grepl("Basic_num_SFY", labels_cat) ~ "Basic",
       grepl("Above_basic_num_SFY", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
+    labels_cat = factor(labels_cat, levels = c("Below basic", "Basic", "Above basic"))
   )
 
 # setting ggplot for the pie charts theme
@@ -473,7 +473,7 @@ ggplot2::theme_set(theme_bw() +
 #              position = position_fill(vjust = 0.5)) +
 #   scale_fill_manual(
 #     name = "Skill level",
-#     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+#     values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
 #   ) +
 #   labs(title = "Communication & Collaboration")
 
@@ -485,7 +485,7 @@ b %>%
              position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Communication & Collaboration")
 
@@ -501,7 +501,7 @@ c %>%
              position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Digital Content Creation")
 
@@ -515,7 +515,7 @@ d %>%
              position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Information and Data Literacy")
 
@@ -528,7 +528,7 @@ e %>%
              position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Problem Solving")
 
@@ -541,7 +541,7 @@ f %>%
              position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Safety")
 
@@ -566,11 +566,11 @@ ggplot(all_skills_df, aes(x = SkillType, y = prop, fill = labels_cat)) +
             vjust = -0.5, size = 3) +
   scale_fill_manual(
     name = "Skill level",
-    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+    values = c("Below basic" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(
-    title = "Overall Digital Skills 2024",
-    x = "Digital Skills",
+    title = "Skill level in each category",
+    x = "Digital Skill Categories",
     y = "No. of Individuals"
   ) +
   theme_minimal() +
@@ -597,7 +597,7 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -624,12 +624,12 @@ df_female <- get_skill_means("FEMALE")
 g <- bind_rows(df_male, df_female) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -648,8 +648,8 @@ g %>%
                  group = GEN),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  labs(title = 'Overall Skill x Gender',
-       x = 'Overall Skill',
+  labs(title = 'Overall Skill Level x Gender',
+       x = 'Overall Skill Level',
        y = 'Distribution (%)',
        fill = 'Gender') +
   scale_fill_manual(values = c("MALE" = "blue", 
@@ -676,7 +676,7 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -703,12 +703,12 @@ df_rural <- get_skill_means("RURAL")
 g <- bind_rows(df_urban, df_rural) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -727,9 +727,9 @@ g %>%
                  group = AREA),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  labs(title = 'Overall Skill x Area',
+  labs(title = 'Overall Skill Level x Area',
        x = 'Overall Skill',
-       y = 'Distribution (%)',
+       y = 'No. of Individuals',
        fill = 'Area') +
   scale_fill_manual(values = c("URBAN" = "#C7DBFF", 
                                "RURAL" = "#FFB6C1")) +  # <-- Your custom colours
@@ -745,7 +745,7 @@ g %>%
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
     combo = paste(GEN, AREA, sep = " - "),
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -764,13 +764,13 @@ combo_levels <- unique(design_filtered$variables$combo)
 combo_data <- purrr::map_dfr(combo_levels, get_combo_means) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     percent_label = scales::percent(values, accuracy = 1),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -787,9 +787,9 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
       "FEMALE - RURAL" = "#FFB6C1"
     )
   ) +
-  labs(title = "Overall Skill by Gender and Area",
+  labs(title = "Overall Skill Level by Gender and Area",
        x = "Skill Level",
-       y = "Percentage",
+       y = "No. of Individuals",
        fill = "Group") +
   theme_minimal()
 
@@ -887,7 +887,7 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -915,13 +915,13 @@ df_4 <- get_skill_means("75 above")
 g <- bind_rows(df_1, df_2, df_3, df_4) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -980,12 +980,12 @@ df_age_gen <- purrr::cross_df(list(AGE = age_levels, GEN = gen_levels)) %>%
 g <- df_age_gen %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     AGE = factor(AGE, levels = age_levels, ordered = TRUE),
     AGE_GEN = interaction(AGE, GEN, sep = " - ")
@@ -994,7 +994,7 @@ g <- df_age_gen %>%
 g %>%
   mutate(
     AGE = factor(AGE, levels = c("15 below", "15-24 years old", "25-74 years old", "75 above"), ordered = TRUE),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE)
   ) %>%
   ggplot(aes(x = measure, y = values, fill = AGE)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
@@ -1038,7 +1038,7 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -1064,13 +1064,13 @@ df_4 <- get_skill_means("Tertiary or post tertiary")
 g <- bind_rows(df_1, df_2, df_3, df_4) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -1125,12 +1125,12 @@ df_edu_gen <- purrr::cross_df(list(EDU = edu_levels, GEN = gen_levels)) %>%
 g <- df_edu_gen %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     EDU = factor(EDU, levels = edu_levels, ordered = TRUE),
     EDU_GEN = interaction(EDU, GEN, sep = " - ")
@@ -1142,7 +1142,7 @@ g %>%
                                  "Lower secondary education",
                                  "Upper secondary, technical or vocational",
                                  "Tertiary or post tertiary"), ordered = TRUE),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE)
   ) %>%
   ggplot(aes(x = measure, y = values, fill = EDU)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
@@ -1188,7 +1188,7 @@ design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 # Reason is because in skills, they're non-numerics
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
-    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
@@ -1216,13 +1216,13 @@ df_0 <- get_skill_means("Studying (below 13 years old)")
 g <- bind_rows(df_1, df_2, df_3, df_4, df_5, df_0) %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
     measure = factor(measure,
-                     levels = c("None",
+                     levels = c("Below basic",
                                 "Basic",
                                 "Above basic"),
                      ordered = TRUE)
@@ -1279,12 +1279,12 @@ df_emp_gen <- purrr::cross_df(list(EMP = emp_levels, GEN = gen_levels)) %>%
 g <- df_emp_gen %>%
   mutate(
     measure = case_when(
-      measure == "skill_below" ~ "None",
+      measure == "skill_below" ~ "Below basic",
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
     values = formattable::percent(values, 1),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     EMP = factor(EMP, levels = emp_levels, ordered = TRUE),
     EMP_GEN = interaction(EMP, GEN, sep = " - ")
@@ -1298,7 +1298,7 @@ g %>%
                                  "Not employed and not looking for work",
                                  "Studying",
                                  "Studying (below 13 years old)"), ordered = TRUE),
-    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE)
   ) %>%
   ggplot(aes(x = measure, y = values, fill = EMP)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
