@@ -866,7 +866,3 @@ skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
-
-
-
-
