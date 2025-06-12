@@ -263,11 +263,11 @@ bruneidesign_ind24$variables<- apply_labels(bruneidesign_ind24$variables,
 
 
 # Frequency tables for each class
-svymean(~AIndex_CC,bruneidesign_ind24)
-svymean(~AIndex_DCC,bruneidesign_ind24)
-svymean(~AIndex_IDL,bruneidesign_ind24)
-svymean(~AIndex_PS,bruneidesign_ind24)
-svymean(~AIndex_SFY,bruneidesign_ind24)
+svytotal(~AIndex_CC,bruneidesign_ind24)
+svytotal(~AIndex_DCC,bruneidesign_ind24)
+svytotal(~AIndex_IDL,bruneidesign_ind24)
+svytotal(~AIndex_PS,bruneidesign_ind24)
+svytotal(~AIndex_SFY,bruneidesign_ind24)
 
 # ============================================================================ #
 # ### Calculating an overall skill level ### #
@@ -326,12 +326,12 @@ bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
   )
 
 # # Generating survey means objects for each Skills class
-# b <- svymean(~AIndex_CC,bruneidesign_ind24)
-# c <- svymean(~AIndex_DCC,bruneidesign_ind24)
-# d <- svymean(~AIndex_IDL,bruneidesign_ind24)
-# e <- svymean(~AIndex_PS,bruneidesign_ind24)
-# f <- svymean(~AIndex_SFY,bruneidesign_ind24)
-# svymean cannot be used - due to non-numerics so need to change first
+# b <- svytotal(~AIndex_CC,bruneidesign_ind24)
+# c <- svytotal(~AIndex_DCC,bruneidesign_ind24)
+# d <- svytotal(~AIndex_IDL,bruneidesign_ind24)
+# e <- svytotal(~AIndex_PS,bruneidesign_ind24)
+# f <- svytotal(~AIndex_SFY,bruneidesign_ind24)
+# svytotal cannot be used - due to non-numerics so need to change first
 
 # Update with numeric indicators (0/1) for all categories
 bruneidesign_ind24 <- update(bruneidesign_ind24,
@@ -364,15 +364,15 @@ bruneidesign_ind24 <- update(bruneidesign_ind24,
 
 
 # Calculate proportions (means) for each
-b <- svymean(~None_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
+b <- svytotal(~None_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
 
-c <- svymean(~None_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
+c <- svytotal(~None_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
 
-d <- svymean(~None_num_IDL + Basic_num_IDL + Above_basic_num_IDL, bruneidesign_ind24)
+d <- svytotal(~None_num_IDL + Basic_num_IDL + Above_basic_num_IDL, bruneidesign_ind24)
 
-e <- svymean(~None_num_PS + Basic_num_PS + Above_basic_num_PS, bruneidesign_ind24)
+e <- svytotal(~None_num_PS + Basic_num_PS + Above_basic_num_PS, bruneidesign_ind24)
 
-f <- svymean(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_ind24)
+f <- svytotal(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_ind24)
 
 
 # Prepare tidy table for each
@@ -388,7 +388,6 @@ b <- as_tibble(b_df) %>%
       grepl("Above_basic_num_CC", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
@@ -404,7 +403,6 @@ c <- as_tibble(c_df) %>%
       grepl("Above_basic_num_DCC", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
@@ -420,7 +418,6 @@ d <- as_tibble(d_df) %>%
       grepl("Above_basic_num_IDL", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
@@ -436,7 +433,6 @@ e <- as_tibble(e_df) %>%
       grepl("Above_basic_num_PS", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
@@ -452,7 +448,6 @@ f <- as_tibble(f_df) %>%
       grepl("Above_basic_num_SFY", labels_cat) ~ "Above basic",
       TRUE ~ "Other"
     ),
-    mean = formattable::percent(prop, digits = 1),
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
@@ -470,41 +465,54 @@ ggplot2::theme_set(theme_bw() +
 
 # Generating charts for each skill class
 ## b for CC
+# b %>%
+#   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
+#   geom_bar(stat = "identity", width = 1, color = "white") +
+#   geom_label(aes(label = round(values), group = labels_cat),
+#              fill = "white", colour = "black",
+#              position = position_fill(vjust = 0.5)) +
+#   scale_fill_manual(
+#     name = "Skill level",
+#     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+#   ) +
+#   labs(title = "Communication & Collaboration")
+
 b %>%
   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  coord_polar("y", start = 0) +
-  geom_label(aes(label = mean, group = labels_cat),
+  geom_label(aes(label = round(prop), group = labels_cat),
              fill = "white", colour = "black",
-             position = position_fill(vjust = 0.5)) +
+             position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Communication & Collaboration")
 
+
+
+
 ## c is for DCC
 c %>%
   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  coord_polar("y", start = 0) +
-  geom_label(aes(label = mean, group = labels_cat),
+  geom_label(aes(label = round(prop), group = labels_cat),
              fill = "white", colour = "black",
-             position = position_fill(vjust = 0.5)) +
+             position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Digital Content Creation")
 
+
 ## d is for IDL
 d %>%
   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  coord_polar("y", start = 0) +
-  geom_label(aes(label = mean, group = labels_cat),
+  geom_label(aes(label = round(prop), group = labels_cat),
              fill = "white", colour = "black",
-             position = position_fill(vjust = 0.5)) +
+             position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
@@ -515,10 +523,9 @@ d %>%
 e %>%
   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  coord_polar("y", start = 0) +
-  geom_label(aes(label = mean, group = labels_cat),
+  geom_label(aes(label = round(prop), group = labels_cat),
              fill = "white", colour = "black",
-             position = position_fill(vjust = 0.5)) +
+             position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
@@ -529,48 +536,50 @@ e %>%
 f %>%
   ggplot(aes(x = "", y = prop, fill = labels_cat)) +
   geom_bar(stat = "identity", width = 1, color = "white") +
-  coord_polar("y", start = 0) +
-  geom_label(aes(label = mean, group = labels_cat),
+  geom_label(aes(label = round(prop), group = labels_cat),
              fill = "white", colour = "black",
-             position = position_fill(vjust = 0.5)) +
+             position = position_fill(vjust = 0.5)) +  # This keeps label centered
   scale_fill_manual(
     name = "Skill level",
     values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
   ) +
   labs(title = "Safety")
 
-# Generating survey mean objects for overall skill indicator
-a <- svymean(~Skill, bruneidesign_ind24)
 
-# Converting survey mean in tibble, extracting and formatting labels and mean
-a <- tibble(
-  labels_cat = substring(names(a), 6),
-  mean = formattable::percent(as.numeric(a), digits = 1)
-)
 
-# to make sure the skill levels from none, basic, above basic
-a$labels_cat <- factor(a$labels_cat, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+# Combining all the bars into 1 graph
+# Step 1: Add Skill Type column
+b$SkillType <- "Communication & Collaboration"
+c$SkillType <- "Digital Content Creation"
+d$SkillType <- "Information & Data Literacy"
+e$SkillType <- "Problem Solving"
+f$SkillType <- "Safety"
 
-# Generating chart for overall skill indicator
-a %>% 
-  ggplot(aes(x = '', y = mean, fill = labels_cat)) +
-  geom_bar(stat="identity", width=1, color="white") +
-  coord_polar('y', start = 0) +
-  geom_label(aes(label = mean,
-                 group = factor(labels_cat)),
-             fill = "white", colour = "black", 
-             position= position_fill(vjust = .5)) +
-  scale_y_continuous(labels = scales::percent) + 
+# Step 2: Combine into one data frame
+all_skills_df <- bind_rows(b, c, d, e, f)
+
+# Step 3: Plot grouped bar chart
+ggplot(all_skills_df, aes(x = SkillType, y = prop, fill = labels_cat)) +
+  geom_bar(stat = "identity", position = "dodge", color = "white") +
+  geom_text(aes(label = round(prop)), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3) +
   scale_fill_manual(
     name = "Skill level",
-    values = c(
-      "None"   = "#FFB6C1",    # None
-      "Basic"         = "#C7DBFF",   # Basic
-      "Above basic" = "#B1E5D3"   # Above basic
-    )
-  )+
-  labs(title = "Overall Skill",
-       fill  = 'Skill level')
+    values = c("None" = "#FFB6C1", "Basic" = "#C7DBFF", "Above basic" = "#B1E5D3")
+  ) +
+  labs(
+    title = "Overall Digital Skills 2024",
+    x = "Digital Skills",
+    y = "No. of Individuals"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    axis.text.x = element_text(angle = 30, hjust = 1)
+  )
+           
+
 
 # ============================================================================ #
 # Barplot for skill classes by Genders
@@ -599,7 +608,7 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by GEN
 get_skill_means <- function(gen_value) {
   sub <- subset(design_filtered, GEN == gen_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     GEN = gen_value,
     measure = names(means),
@@ -619,7 +628,6 @@ g <- bind_rows(df_male, df_female) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure,
                      levels = c("None",
                                 "Basic",
@@ -636,11 +644,10 @@ g %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = GEN),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = 'Overall Skill x Gender',
        x = 'Overall Skill',
        y = 'Distribution (%)',
@@ -680,7 +687,7 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by AREA
 get_skill_means <- function(urban_value) {
   sub <- subset(design_filtered, AREA == urban_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     AREA = urban_value,
     measure = names(means),
@@ -700,7 +707,6 @@ g <- bind_rows(df_urban, df_rural) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure,
                      levels = c("None",
                                 "Basic",
@@ -717,11 +723,10 @@ g %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = AREA),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = 'Overall Skill x Area',
        x = 'Overall Skill',
        y = 'Distribution (%)',
@@ -747,7 +752,7 @@ design_filtered$variables <- design_filtered$variables %>%
 
 get_combo_means <- function(group_label) {
   sub <- subset(design_filtered, combo == group_label)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     combo = group_label,
     measure = names(means),
@@ -773,8 +778,7 @@ combo_data <- purrr::map_dfr(combo_levels, get_combo_means) %>%
 
 ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
   geom_col(position = "dodge") +
-  geom_label(aes(label = percent_label), position = position_dodge(width = 0.9)) +
-  scale_y_continuous(labels = scales::percent_format()) +
+  geom_label(aes(label = round(values)), position = position_dodge(width = 0.9)) +
   scale_fill_manual(
     values = c(
       "MALE - URBAN"   = "#C6E2FF",
@@ -832,7 +836,6 @@ skill_occ_gender <- survey_tbl %>%
 ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
   geom_col(position = "dodge") +
   facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
-  scale_y_continuous(labels = scales::percent_format()) +
   scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
   labs(
     title = "Digital Skill Levels by Occupation and Gender",
@@ -851,7 +854,6 @@ ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
 skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
   geom_col(position = "dodge") +
   facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
-  scale_y_continuous(labels = scales::percent_format()) +
   scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
   labs(
     title = "Digital Skill Levels by Occupation and Gender",
