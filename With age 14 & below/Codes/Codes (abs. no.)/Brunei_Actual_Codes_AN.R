@@ -31,13 +31,6 @@ bruneidesign_ind24$variables$CC <- bruneidesign_ind24$variables$CC1 +
   bruneidesign_ind24$variables$CC4
 
 
-# This code checks if a person has each of four communication skills 
-# (like using social media or sending messages), 
-# gives 1 point for each skill they have, 
-# and then adds up the points to get a 
-# total Communication and Collaboration skill score.
-
-
 # B. Digital content creation
 ###   Digital Skill                                            Database variable
 
@@ -159,16 +152,7 @@ bruneidesign_ind24$variables$AIndex_CC <- factor(bruneidesign_ind24$variables$AI
                                                              'Above basic'),
                                                  ordered = T)
 
-# This code assigns a proficiency level based on how many Communication and Collaboration skills a person has—
-# 
-# 0 skills = "None",
-# 
-# 1 skill = "Basic",
-# 
-# 2 or more skills = "Above basic".
-# Then, it labels these levels clearly for analysis.
-
-
+#edit label from 'None' to 'Below Basic'
 
 ### B. DCC - Digital content creation
 bruneidesign_ind24$variables$AIndex_DCC<-ifelse((bruneidesign_ind24$variables$DCC2+
@@ -285,13 +269,6 @@ svymean(~AIndex_IDL,bruneidesign_ind24)
 svymean(~AIndex_PS,bruneidesign_ind24)
 svymean(~AIndex_SFY,bruneidesign_ind24)
 
-
-# The svymean() function is used to compute the weighted proportions (percentages) 
-# of each skill level—None, Basic, Above Basic—
-# for every digital skill area, using the survey design in bruneidesign_ind24. 
-# This reflects national-level estimates if weights are applied correctly.
-
-
 # ============================================================================ #
 # ### Calculating an overall skill level ### #
 #-------------------------------------------------------------------------------
@@ -321,25 +298,10 @@ bruneidesign_ind24$variables$Skill <- apply(bruneidesign_ind24$variables[, c("AI
                                               }
                                             })
 
-
-# It looks at each person’s scores across all five digital skill areas, 
-# and assigns an overall skill level:
-#   
-# If they scored 0 ("None") in any area, their overall level is "None".
-# 
-# If they scored 2 ("Above basic") in all areas, their overall level is "Above basic".
-# 
-# Otherwise, their level is set to "Basic".
-
-
 # Convert to factor with ordering
 bruneidesign_ind24$variables$Skill <- factor(bruneidesign_ind24$variables$Skill,
                                              levels = c("None", "Basic", "Above basic"),
                                              ordered = TRUE)
-
-
-# This final step organizes the overall digital skill levels into a factor with a clear order:
-#   "None" < "Basic" < "Above basic"
 
 # ============================================================================ #
 # Sector charts (pie charts) for skill classes
@@ -362,14 +324,6 @@ bruneidesign_ind24$variables <- bruneidesign_ind24$variables %>%
                             levels = c(0, 1, 2),
                             labels = c("None", "Basic", "Above basic"))
   )
-
-
-# This code creates new categorical variables for each digital skill area 
-# (e.g., AIndex_CC_cat) by converting the numeric scores (0, 1, 2) 
-# back into labeled levels — "None", "Basic", and "Above basic" — 
-# so they can be used in pie charts and other visualizations with readable labels.
-
-
 
 # # Generating survey means objects for each Skills class
 # b <- svymean(~AIndex_CC,bruneidesign_ind24)
@@ -408,15 +362,6 @@ bruneidesign_ind24 <- update(bruneidesign_ind24,
 )
 
 
-# This code adds new variables that mark whether each respondent falls into 
-# "None", "Basic", or "Above basic" for each skill area — 
-# by assigning 1 if true, 0 if false.
-# 
-# This way, you get easy-to-summarize numeric indicators 
-# for each skill level category, which is handy for 
-# calculating totals or making charts like pie charts.
-
-
 
 # Calculate proportions (means) for each
 b <- svymean(~None_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
@@ -434,9 +379,7 @@ f <- svymean(~None_num_SFY + Basic_num_SFY + Above_basic_num_SFY, bruneidesign_i
 b_df <- data.frame(
   labels_cat = names(coef(b)),
   prop = coef(b),
-  SE = sqrt(diag(vcov(b)))
-)
-
+  SE = sqrt(diag(vcov(b))))
 b <- as_tibble(b_df) %>%
   mutate(
     labels_cat = case_when(
@@ -449,34 +392,10 @@ b <- as_tibble(b_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-# You create a data frame (b_df) with:
-#   
-# - labels_cat: names of coefficients from model or object b
-# 
-# - prop: coefficient estimates themselves
-# 
-# - SE: their standard errors
-# 
-# Then you convert b_df into a tibble and:
-#   
-# - Use case_when to simplify and group the labels to just 
-# "None", "Basic", or "Above basic" for the CC skill categories 
-# based on the names.
-# 
-# - Format the proportions (prop) as percentages for easier reading.
-# 
-# - Make labels_cat a factor with an ordered level for nicer plotting or reporting.
-
-
-
-
 c_df <- data.frame(
   labels_cat = names(coef(c)),
   prop = coef(c),
-  SE = sqrt(diag(vcov(c)))
-)
-
+  SE = sqrt(diag(vcov(c))))
 c <- as_tibble(c_df) %>%
   mutate(
     labels_cat = case_when(
@@ -489,15 +408,10 @@ c <- as_tibble(c_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-
-
 d_df <- data.frame(
   labels_cat = names(coef(d)),
   prop = coef(d),
-  SE = sqrt(diag(vcov(d)))
-)
-
+  SE = sqrt(diag(vcov(d))))
 d <- as_tibble(d_df) %>%
   mutate(
     labels_cat = case_when(
@@ -510,13 +424,10 @@ d <- as_tibble(d_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
 e_df <- data.frame(
   labels_cat = names(coef(e)),
   prop = coef(e),
-  SE = sqrt(diag(vcov(e)))
-)
-
+  SE = sqrt(diag(vcov(e))))
 e <- as_tibble(e_df) %>%
   mutate(
     labels_cat = case_when(
@@ -532,9 +443,7 @@ e <- as_tibble(e_df) %>%
 f_df <- data.frame(
   labels_cat = names(coef(f)),
   prop = coef(f),
-  SE = sqrt(diag(vcov(f)))
-)
-
+  SE = sqrt(diag(vcov(f))))
 f <- as_tibble(f_df) %>%
   mutate(
     labels_cat = case_when(
@@ -547,9 +456,7 @@ f <- as_tibble(f_df) %>%
     labels_cat = factor(labels_cat, levels = c("None", "Basic", "Above basic"))
   )
 
-
-
-
+# setting ggplot for the pie charts theme
 ggplot2::theme_set(theme_bw() +
                      theme(axis.text.x=element_blank(),
                            axis.title.x = element_blank(),
@@ -559,8 +466,7 @@ ggplot2::theme_set(theme_bw() +
                            axis.ticks = element_blank(),
                            plot.title = element_text(hjust = "0.5",face = "bold", size=14),
                            strip.background = element_rect(fill = 'white'),
-                           legend.position  = 'right')
-)
+                           legend.position  = 'right'))
 
 # Generating charts for each skill class
 ## b for CC
@@ -642,14 +548,8 @@ a <- tibble(
   mean = formattable::percent(as.numeric(a), digits = 1)
 )
 
-
-# converts the results into a tibble with two columns:
-#   
-# - labels_cat: the skill level names extracted from the result names,
-# 
-# - mean: the proportions formatted as percentages (e.g., "25.4%") 
-# for easy reading or plotting.
-
+# to make sure the skill levels from none, basic, above basic
+a$labels_cat <- factor(a$labels_cat, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
 
 # Generating chart for overall skill indicator
 a %>% 
@@ -676,8 +576,7 @@ a %>%
 # Barplot for skill classes by Genders
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
-
-bruneidesign_ind24$variables$GEN <- haven::as_factor(bruneidesign_ind24$variables$GEN)
+# Include gender here, dont be sexist
 bruneidesign_ind24$variables$GEN <- factor(bruneidesign_ind24$variables$GEN,
                                            levels = c(1, 2),
                                            labels = c("MALE", "FEMALE"),
@@ -694,14 +593,6 @@ design_filtered$variables <- design_filtered$variables %>%
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
 
-
-# creates three new numeric dummy variables 
-# (skill_below, skill_basic, skill_above), 
-# each marking whether a person’s overall skill level falls into 
-# "None", "Basic", or "Above basic" respectively (1 = yes, 0 = no), 
-# which makes it easier to calculate proportions by gender.
-
-
 # Compute skill means by gender
 #-------------------------------------------------------------------------------
 
@@ -715,13 +606,6 @@ get_skill_means <- function(gen_value) {
     values = coef(means)
   )
 }
-
-
-# It defines a function get_skill_means that takes a gender,
-# filters the survey data for that gender, 
-# and calculates the survey-weighted average (proportion) of people 
-# in each skill level category (skill_below, skill_basic, skill_above).
-
 
 # Apply to both genders
 df_male <- get_skill_means("MALE")
@@ -761,20 +645,12 @@ g %>%
        x = 'Overall Skill',
        y = 'Distribution (%)',
        fill = 'Gender') +
-  scale_fill_manual(values = c("MALE" = "#C7DBFF", 
-                               "FEMALE" = "#FFB6C1")) +  # <-- Your custom colours
+  scale_fill_manual(values = c("MALE" = "blue", 
+                               "FEMALE" = "red")) +  # <-- Your custom colours
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
         strip.background = element_rect(fill = 'white'),
         legend.position  = 'right')
-
-
-
-
-
-
-
-
 
 
 # Barplot for skill classes by AREA
@@ -783,9 +659,9 @@ g %>%
 # Include gender here, dont be sexist
 bruneidesign_ind24$variables$AREA <- haven::as_factor(bruneidesign_ind24$variables$AREA)
 bruneidesign_ind24$variables$AREA <- factor(bruneidesign_ind24$variables$AREA,
-                                           levels = c(1, 2),
-                                           labels = c("URBAN", "RURAL"),
-                                           ordered = TRUE)
+                                            levels = c(1, 2),
+                                            labels = c("URBAN", "RURAL"),
+                                            ordered = TRUE)
 # Filter out NA in Skill if any
 design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
 
@@ -913,14 +789,6 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
        fill = "Group") +
   theme_minimal()
 
-
-
-
-
-
-
-
-
 # Barplot for skill classes by OCCUPATION
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
@@ -928,19 +796,19 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
 bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
 
 bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
-                                            levels = c(1:10, 0),
-                                            labels = c("Manager",
-                                                       "Professional",
-                                                       "Technician and associate professional",
-                                                       "Clerical support worker",
-                                                       "Services and sales worker",
-                                                       "Skilled agricultural, forestry and fishery worker",
-                                                       "Craft and related trades worker",
-                                                       "Plant/machine operators and assemblers",
-                                                       "Elementary occupations",
-                                                       "Armed forces",
-                                                       "Blank/Not stated"),
-                                            ordered = FALSE)
+                                           levels = c(1:10, 0),
+                                           labels = c("Manager",
+                                                      "Professional",
+                                                      "Technician and associate professional",
+                                                      "Clerical support worker",
+                                                      "Services and sales worker",
+                                                      "Skilled agricultural, forestry and fishery worker",
+                                                      "Craft and related trades worker",
+                                                      "Plant/machine operators and assemblers",
+                                                      "Elementary occupations",
+                                                      "Armed forces",
+                                                      "Blank/Not stated"),
+                                           ordered = FALSE)
 
 
 design_filtered_occ <- subset(design_filtered, !is.na(Skill) & OCC != "Blank/Not stated")
@@ -997,26 +865,6 @@ skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
     strip.text = element_text(size = 10),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
-
-
-
-
-
-# First, save your plot to a variable
-my_plot <- ggplot(data, aes(...)) +
-  geom_bar(...) +
-  labs(title = "Your Plot Title")
-
-
-# Then save it with a full file path and custom dimensions (in inches)
-ggsave("C:/Users/hamizah.hamzah/OneDrive - AITI/Brunei Digital Skills 2024/Brunei_Digital_Skills2024/Digital_Skills_Levels_by_Occupation_and_Gender.png",
-       plot = skill_plot,
-       width = 12,      # wider
-       height = 8,      # taller
-       dpi = 300)       # high quality (dots per inch)
-
-
-
 
 
 
