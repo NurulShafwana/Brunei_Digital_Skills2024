@@ -866,6 +866,464 @@ skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
 
+# ============================================================================ #
+# Barplot for skill levels by age group
+#-------------------------------------------------------------------------------
+# Part 1 - skill x age groups
+bruneidesign_ind24$variables$AGE <- haven::as_factor(bruneidesign_ind24$variables$AGE)
+bruneidesign_ind24$variables$AGE <- factor(bruneidesign_ind24$variables$AGE,
+                                           levels = c(1, 2, 3, 4),
+                                           labels = c("15 below",
+                                                      "15-24 years old",
+                                                      "25-74 years old",
+                                                      "75 above"),
+                                           ordered = TRUE)
+# Filter out NA in Skill if any
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
+
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
+
+# Compute skill means by age group
+#-------------------------------------------------------------------------------
+# Function to compute skill means by age
+get_skill_means <- function(age_value) {
+  sub <- subset(design_filtered, AGE == age_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    AGE = age_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+# Apply to both genders
+df_1 <- get_skill_means("15 below")
+df_2 <- get_skill_means("15-24 years old")
+df_3 <- get_skill_means("25-74 years old")
+df_4 <- get_skill_means("75 above")
+
+# Combine and clean
+g <- bind_rows(df_1, df_2, df_3, df_4) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure,
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
+
+#-------------------------------------------------------------------------------
+# Generating barplot
+g %>% 
+  mutate(AGE = forcats::fct_reorder(AGE, values, .desc = F)) %>% 
+  ggplot(aes(y = values, 
+             fill = AGE,
+             x = measure
+  )) +
+  geom_bar(position='dodge', stat='identity')+ 
+  geom_label(aes(label = values,
+                 group = AGE),
+             fill = "white", colour = "black", 
+             position= position_dodge(width = .9)) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = 'Overall Skill x Age Group',
+       x = 'Overall Skill',
+       y = 'Distribution (%)',
+       fill = 'Gender') +
+  scale_fill_manual(values = c("15 below" = "blue", 
+                               "15-24 years old" = "red",
+                               "25-74 years old" = "yellow",
+                               "75 above" = "green")) +  # <-- Your custom colours
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        strip.background = element_rect(fill = 'white'),
+        legend.position  = 'right')
+
+
+# ---------------------------------------------------------------------------- #
+# Part 2 - combining skill x age groups & skill x genders
+# since skill x genders have been done previously, so no need to make a new one
+# Compute skill means by age group by genders
+# Compute skill means by age group by gender
+get_skill_means_age_gender <- function(age_value, gen_value) {
+  sub <- subset(design_filtered, AGE == age_value & GEN == gen_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    AGE = age_value,
+    GEN = gen_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+age_levels <- levels(design_filtered$variables$AGE)
+gen_levels <- levels(design_filtered$variables$GEN)
+
+df_age_gen <- purrr::cross_df(list(AGE = age_levels, GEN = gen_levels)) %>%
+  purrr::pmap_dfr(~ get_skill_means_age_gender(..1, ..2))
+
+g <- df_age_gen %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
+    AGE = factor(AGE, levels = age_levels, ordered = TRUE),
+    AGE_GEN = interaction(AGE, GEN, sep = " - ")
+  )
+# plot
+g %>%
+  mutate(
+    AGE = factor(AGE, levels = c("15 below", "15-24 years old", "25-74 years old", "75 above"), ordered = TRUE),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = measure, y = values, fill = AGE)) +
+  geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
+  geom_label(aes(label = values, group = AGE),
+             position = position_dodge(width = 0.8),
+             fill = "white", colour = "black") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Overall Skill by Age Group and Gender",
+       x = "Overall Skill",
+       y = "Distribution (%)",
+       fill = "Age Group") +
+  scale_fill_manual(values = c(
+    "15 below" = "blue",
+    "15-24 years old" = "red",
+    "25-74 years old" = "green",
+    "75 above" = "yellow"
+  )) +
+  facet_wrap(~ GEN) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.background = element_rect(fill = "white"),
+    legend.position = "right"
+  )
+
+# ============================================================================ #
+# Barplot for overall skill by Education level and Gender
+# Part 1 - skill x education level
+bruneidesign_ind24$variables$EDU <- haven::as_factor(bruneidesign_ind24$variables$EDU)
+bruneidesign_ind24$variables$EDU <- factor(bruneidesign_ind24$variables$EDU,
+                                           levels = c(1, 2, 3, 4),
+                                           labels = c("Primary education or lower",
+                                                      "Lower secondary education",
+                                                      "Upper secondary, technical or vocational",
+                                                      "Tertiary or post tertiary"),
+                                           ordered = TRUE)
+# Filter out NA in Skill if any
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
+
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
+# Compute skill means by age education level
+# Function to compute skill means by education level
+get_skill_means <- function(edu_value) {
+  sub <- subset(design_filtered, EDU == edu_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    EDU = edu_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+# Apply to all education levels
+df_1 <- get_skill_means("Primary education or lower")
+df_2 <- get_skill_means("Lower secondary education")
+df_3 <- get_skill_means("Upper secondary, technical or vocational")
+df_4 <- get_skill_means("Tertiary or post tertiary")
+
+# Combine and clean
+g <- bind_rows(df_1, df_2, df_3, df_4) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure,
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
+
+#-------------------------------------------------------------------------------
+# Generating barplot
+g %>% 
+  mutate(EDU = forcats::fct_reorder(EDU, values, .desc = F)) %>% 
+  ggplot(aes(y = values, 
+             fill = EDU,
+             x = measure
+  )) +
+  geom_bar(position='dodge', stat='identity')+ 
+  geom_label(aes(label = values,
+                 group = EDU),
+             fill = "white", colour = "black", 
+             position= position_dodge(width = .9)) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = 'Overall Skill x Education Levels',
+       x = 'Overall Skill',
+       y = 'Distribution (%)',
+       fill = 'Edu') +
+  scale_fill_manual(values = c("Primary education or lower" = "blue", 
+                               "Lower secondary education" = "red",
+                               "Upper secondary, technical or vocational" = "yellow",
+                               "Tertiary or post tertiary" = "green")) +  
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        strip.background = element_rect(fill = 'white'),
+        legend.position  = 'right')
+
+
+# Part 2 - combining overall skill x genders and overall skill x education level
+get_skill_means_edu_gender <- function(edu_value, gen_value) {
+  sub <- subset(design_filtered, EDU == edu_value & GEN == gen_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    EDU = edu_value,
+    GEN = gen_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+edu_levels <- levels(design_filtered$variables$EDU)
+gen_levels <- levels(design_filtered$variables$GEN)
+
+df_edu_gen <- purrr::cross_df(list(EDU = edu_levels, GEN = gen_levels)) %>%
+  purrr::pmap_dfr(~ get_skill_means_edu_gender(..1, ..2))
+
+g <- df_edu_gen %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
+    EDU = factor(EDU, levels = edu_levels, ordered = TRUE),
+    EDU_GEN = interaction(EDU, GEN, sep = " - ")
+  )
+# plot
+g %>%
+  mutate(
+    EDU = factor(EDU, levels = c("Primary education or lower",
+                                 "Lower secondary education",
+                                 "Upper secondary, technical or vocational",
+                                 "Tertiary or post tertiary"), ordered = TRUE),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = measure, y = values, fill = EDU)) +
+  geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
+  geom_label(aes(label = values, group = EDU),
+             position = position_dodge(width = 0.8),
+             fill = "white", colour = "black") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Overall Skill by Education levels and Gender",
+       x = "Overall Skill",
+       y = "Distribution (%)",
+       fill = "Education levels") +
+  scale_fill_manual(values = c(
+    "Primary education or lower" = "blue",
+    "Lower secondary education" = "red",
+    "Upper secondary, technical or vocational" = "green",
+    "Tertiary or post tertiary" = "yellow"
+  )) +
+  facet_wrap(~ GEN) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.background = element_rect(fill = "white"),
+    legend.position = "right"
+  )
+
+# ============================================================================ #
+# Barplot for overall skill by employment status and Gender
+# Part 1 - skill x employment status
+bruneidesign_ind24$variables$EMP <- haven::as_factor(bruneidesign_ind24$variables$EMP)
+bruneidesign_ind24$variables$EMP <- factor(bruneidesign_ind24$variables$EMP,
+                                           levels = c(1, 2, 3, 4, 5, 0),
+                                           labels = c("Employee or paid apprentice/intern",
+                                                      "Employer or self-employed or helping without pay in household/family business",
+                                                      "Not employed but seeking jobs",
+                                                      "Not employed and not looking for work",
+                                                      "Studying",
+                                                      "Studying (below 13 years old)"),
+                                           ordered = TRUE)
+# Filter out NA in Skill if any
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
+
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
+# Compute skill means by age education level
+# Function to compute skill means by education level
+get_skill_means <- function(emp_value) {
+  sub <- subset(design_filtered, EMP == emp_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    EMP = emp_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+# Apply to all education levels
+df_1 <- get_skill_means("Employee or paid apprentice/intern")
+df_2 <- get_skill_means("Employer or self-employed or helping without pay in household/family business")
+df_3 <- get_skill_means("Not employed but seeking jobs")
+df_4 <- get_skill_means("Not employed and not looking for work")
+df_5 <- get_skill_means("Studying")
+df_0 <- get_skill_means("Studying (below 13 years old)")
+
+# Combine and clean
+g <- bind_rows(df_1, df_2, df_3, df_4, df_5, df_0) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure,
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
+
+#-------------------------------------------------------------------------------
+# Generating barplot
+g %>% 
+  mutate(EMP = forcats::fct_reorder(EMP, values, .desc = F)) %>% 
+  ggplot(aes(y = values, 
+             fill = EMP,
+             x = measure
+  )) +
+  geom_bar(position='dodge', stat='identity')+ 
+  geom_label(aes(label = values,
+                 group = EMP),
+             fill = "white", colour = "black", 
+             position= position_dodge(width = .9)) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = 'Overall Skill x Employment status',
+       x = 'Overall Skill',
+       y = 'Distribution (%)',
+       fill = 'Employment status') +
+  scale_fill_manual(values = c("Employee or paid apprentice/intern" = "blue", 
+                               "Employer or self-employed or helping without pay in household/family business" = "red",
+                               "Not employed but seeking jobs" = "yellow",
+                               "Not employed and not looking for work" = "green",
+                               "Studying" = "pink",
+                               "Studying (below 13 years old)" = "black")) +  
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        strip.background = element_rect(fill = 'white'),
+        legend.position  = 'right')
+
+
+# Part 2 - combining overall skill x genders and overall skill x education level
+get_skill_means_emp_gender <- function(emp_value, gen_value) {
+  sub <- subset(design_filtered, EMP == emp_value & GEN == gen_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    EMP = emp_value,
+    GEN = gen_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+emp_levels <- levels(design_filtered$variables$EMP)
+gen_levels <- levels(design_filtered$variables$GEN)
+
+df_emp_gen <- purrr::cross_df(list(EMP = emp_levels, GEN = gen_levels)) %>%
+  purrr::pmap_dfr(~ get_skill_means_emp_gender(..1, ..2))
+
+g <- df_emp_gen %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE),
+    GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
+    EMP = factor(EMP, levels = emp_levels, ordered = TRUE),
+    EMP_GEN = interaction(EMP, GEN, sep = " - ")
+  )
+# plot
+g %>%
+  mutate(
+    EMP = factor(EMP, levels = c("Employee or paid apprentice/intern", 
+                                 "Employer or self-employed or helping without pay in household/family business",
+                                 "Not employed but seeking jobs",
+                                 "Not employed and not looking for work",
+                                 "Studying",
+                                 "Studying (below 13 years old)"), ordered = TRUE),
+    measure = factor(measure, levels = c("None", "Basic", "Above basic"), ordered = TRUE)
+  ) %>%
+  ggplot(aes(x = measure, y = values, fill = EMP)) +
+  geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
+  geom_label(aes(label = values, group = EMP),
+             position = position_dodge(width = 0.8),
+             fill = "white", colour = "black") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Overall Skill by Employment status and Gender",
+       x = "Overall Skill",
+       y = "Distribution (%)",
+       fill = "Employment status") +
+  scale_fill_manual(values = c(
+    "Employee or paid apprentice/intern" = "blue", 
+    "Employer or self-employed or helping without pay in household/family business" = "red",
+    "Not employed but seeking jobs" = "yellow",
+    "Not employed and not looking for work" = "green",
+    "Studying" = "pink",
+    "Studying (below 13 years old)" = "black"
+  )) +
+  facet_wrap(~ GEN) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.background = element_rect(fill = "white"),
+    legend.position = "right"
+  )
+
 
 
 
