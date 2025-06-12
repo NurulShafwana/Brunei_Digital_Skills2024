@@ -949,6 +949,7 @@ design_filtered_occ <- subset(design_filtered, !is.na(Skill) & OCC != "Blank/Not
 install.packages("srvyr")
 
 library(srvyr)
+library(ggplot2)
 
 # Convert to srvyr object for tidy syntax
 survey_tbl <- as_survey_design(design_filtered_occ)
@@ -977,9 +978,6 @@ ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
     strip.text = element_text(size = 10),
     axis.text.x = element_text(angle = 45, hjust = 1)
   )
-
-
-
 
 # Save plot to a variable called skill_plot
 skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +

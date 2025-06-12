@@ -651,3 +651,222 @@ g %>%
   theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
         strip.background = element_rect(fill = 'white'),
         legend.position  = 'right')
+
+
+# Barplot for skill classes by AREA
+#-------------------------------------------------------------------------------
+# Labeling workforce status categories and variable
+# Include gender here, dont be sexist
+bruneidesign_ind24$variables$AREA <- haven::as_factor(bruneidesign_ind24$variables$AREA)
+bruneidesign_ind24$variables$AREA <- factor(bruneidesign_ind24$variables$AREA,
+                                            levels = c(1, 2),
+                                            labels = c("URBAN", "RURAL"),
+                                            ordered = TRUE)
+# Filter out NA in Skill if any
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill))
+
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
+
+# Compute skill means by AREA
+#-------------------------------------------------------------------------------
+
+# Function to compute skill means by AREA
+get_skill_means <- function(urban_value) {
+  sub <- subset(design_filtered, AREA == urban_value)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    AREA = urban_value,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+# Apply to both AREAS
+df_urban <- get_skill_means("URBAN")
+df_rural <- get_skill_means("RURAL")
+
+# Combine and clean
+g <- bind_rows(df_urban, df_rural) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    values = formattable::percent(values, 1),
+    measure = factor(measure,
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
+
+#-------------------------------------------------------------------------------
+# Generating barplot
+g %>% 
+  mutate(AREA = forcats::fct_reorder(AREA, values, .desc = F)) %>% 
+  ggplot(aes(y = values, 
+             fill = AREA,
+             x = measure
+  )) +
+  geom_bar(position='dodge', stat='identity')+ 
+  geom_label(aes(label = values,
+                 group = AREA),
+             fill = "white", colour = "black", 
+             position= position_dodge(width = .9)) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = 'Overall Skill x Area',
+       x = 'Overall Skill',
+       y = 'Distribution (%)',
+       fill = 'Area') +
+  scale_fill_manual(values = c("URBAN" = "#C7DBFF", 
+                               "RURAL" = "#FFB6C1")) +  # <-- Your custom colours
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        strip.background = element_rect(fill = 'white'),
+        legend.position  = 'right')
+
+
+
+#Combining both graphs (Overall Skill x Gender x Area)
+
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    combo = paste(GEN, AREA, sep = " - "),
+    skill_below  = if_else(Skill == "None", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
+
+get_combo_means <- function(group_label) {
+  sub <- subset(design_filtered, combo == group_label)
+  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    combo = group_label,
+    measure = names(means),
+    values = coef(means)
+  )
+}
+
+combo_levels <- unique(design_filtered$variables$combo)
+combo_data <- purrr::map_dfr(combo_levels, get_combo_means) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "None",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    percent_label = scales::percent(values, accuracy = 1),
+    measure = factor(measure,
+                     levels = c("None",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
+
+ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
+  geom_col(position = "dodge") +
+  geom_label(aes(label = percent_label), position = position_dodge(width = 0.9)) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(
+    values = c(
+      "MALE - URBAN"   = "#C6E2FF",
+      "FEMALE - URBAN" = "#FFE4E1",
+      "MALE - RURAL"   = "#E0FFFF",
+      "FEMALE - RURAL" = "#FFB6C1"
+    )
+  ) +
+  labs(title = "Overall Skill by Gender and Area",
+       x = "Skill Level",
+       y = "Percentage",
+       fill = "Group") +
+  theme_minimal()
+
+# Barplot for skill classes by OCCUPATION
+#-------------------------------------------------------------------------------
+# Labeling workforce status categories and variable
+
+bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
+
+bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
+                                           levels = c(1:10, 0),
+                                           labels = c("Manager",
+                                                      "Professional",
+                                                      "Technician and associate professional",
+                                                      "Clerical support worker",
+                                                      "Services and sales worker",
+                                                      "Skilled agricultural, forestry and fishery worker",
+                                                      "Craft and related trades worker",
+                                                      "Plant/machine operators and assemblers",
+                                                      "Elementary occupations",
+                                                      "Armed forces",
+                                                      "Blank/Not stated"),
+                                           ordered = FALSE)
+
+
+design_filtered_occ <- subset(design_filtered, !is.na(Skill) & OCC != "Blank/Not stated")
+
+
+install.packages("srvyr")
+
+library(srvyr)
+library(ggplot2)
+
+# Convert to srvyr object for tidy syntax
+survey_tbl <- as_survey_design(design_filtered_occ)
+
+# Summarize skill levels by Gender and Occupation
+skill_occ_gender <- survey_tbl %>%
+  group_by(GEN, OCC, Skill) %>%
+  summarize(p = survey_mean(vartype = "ci", na.rm = TRUE)) %>%
+  ungroup()
+
+
+ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
+  labs(
+    title = "Digital Skill Levels by Occupation and Gender",
+    x = "Overall Digital Skill",
+    y = "Percentage",
+    fill = "Gender"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+# Save plot to a variable called skill_plot
+skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
+  labs(
+    title = "Digital Skill Levels by Occupation and Gender",
+    x = "Overall Digital Skill",
+    y = "Percentage",
+    fill = "Gender"
+  ) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+    strip.text = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+
+
+
+
