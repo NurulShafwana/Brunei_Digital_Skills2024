@@ -799,25 +799,25 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
 #-------------------------------------------------------------------------------
 #Labeling workforce status categories and variable
 # 
-# bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
-# 
-# bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
-#                                            levels = c(1:10, 0),
-#                                            labels = c("Manager",
-#                                                       "Professional",
-#                                                       "Technician and associate professional",
-#                                                       "Clerical support worker",
-#                                                       "Services and sales worker",
-#                                                       "Skilled agricultural, forestry and fishery worker",
-#                                                       "Craft and related trades worker",
-#                                                       "Plant/machine operators and assemblers",
-#                                                       "Elementary occupations",
-#                                                       "Armed forces",
-#                                                       "Blank/Not stated"),
-#                                            ordered = FALSE)
-# 
-# 
-# design_filtered_occ <- subset(design_filtered, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
+bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
+
+bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
+                                           levels = c(1:10, 0),
+                                           labels = c("Manager",
+                                                      "Professional",
+                                                      "Technician and associate professional",
+                                                      "Clerical support worker",
+                                                      "Services and sales worker",
+                                                      "Skilled agricultural, forestry and fishery worker",
+                                                      "Craft and related trades worker",
+                                                      "Plant/machine operators and assemblers",
+                                                      "Elementary occupations",
+                                                      "Armed forces",
+                                                      "Blank/Not stated"),
+                                           ordered = TRUE)
+
+
+design_filtered_occ <- subset(design_filtered, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
 # 
 # 
 # install.packages("srvyr")
@@ -871,8 +871,12 @@ get_skill_OCC_gender <- function(OCC_value, gen_value) {
 }
 
 
-OCC_levels <- levels(design_filtered$variables$OCC)
-gen_levels <- levels(design_filtered$variables$GEN)
+# OCC_levels <- levels(design_filtered$variables$OCC)
+# gen_levels <- levels(design_filtered$variables$GEN)
+
+OCC_levels <- unique(design_filtered$variables$OCC)
+GEN_levels <- unique(design_filtered$variables$GEN)
+
 
 
 df_OCC_gen <- purrr::cross_df(list(OCC = OCC_levels, GEN = gen_levels)) %>%
