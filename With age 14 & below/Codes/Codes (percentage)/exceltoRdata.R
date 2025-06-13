@@ -11,7 +11,7 @@ library(readxl)
 library(survey)
 
 # Read excel file
-mydata <- read_excel("With age 15 & below/Codes/Codes (%)/Brunei Digital Skills 2024.xlsx")
+mydata <- read_excel("Without age 14 & below/Brunei Digital Skills 2024 (2).xlsx")
 
 # Check if data is correct - not necessary to do
 head(mydata)
@@ -31,8 +31,8 @@ mydata <- mydata[-1, -4]
 ### In this case, we use ids (or cluster) as HH,
 ###                       strata as Gender,
 ###                       and no weights used.
-bruneidesign_ind24 <- svydesign(ids = ~HH, strata = ~AREA, data = mydata,
+bruneidesign_ind24_2 <- svydesign(ids = ~HH, strata = ~AREA, data = mydata,
                                 nest = TRUE)
 
 # Save the file as Rdata file
-save(bruneidesign_ind24, file = "bruneidesign_ind24.Rdata")
+save(bruneidesign_ind24_2, file = "bruneidesign_ind24_2.Rdata")
