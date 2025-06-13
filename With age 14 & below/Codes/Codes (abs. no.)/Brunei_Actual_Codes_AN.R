@@ -793,62 +793,129 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
        fill = "Group") +
   theme_minimal()
 
-# Barplot for skill classes by OCCUPATION X GENDER X SKILL LEVEL
+
+
+#Barplot for skill classes by OCCUPATION X GENDER X SKILL LEVEL
 #-------------------------------------------------------------------------------
-# Labeling workforce status categories and variable
+#Labeling workforce status categories and variable
+# 
+# bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
+# 
+# bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
+#                                            levels = c(1:10, 0),
+#                                            labels = c("Manager",
+#                                                       "Professional",
+#                                                       "Technician and associate professional",
+#                                                       "Clerical support worker",
+#                                                       "Services and sales worker",
+#                                                       "Skilled agricultural, forestry and fishery worker",
+#                                                       "Craft and related trades worker",
+#                                                       "Plant/machine operators and assemblers",
+#                                                       "Elementary occupations",
+#                                                       "Armed forces",
+#                                                       "Blank/Not stated"),
+#                                            ordered = FALSE)
+# 
+# 
+# design_filtered_occ <- subset(design_filtered, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
+# 
+# 
+# install.packages("srvyr")
+# 
+# library(srvyr)
+# library(ggplot2)
+# 
+# # Convert to srvyr object for tidy syntax
+# survey_tbl <- as_survey_design(design_filtered_occ)
+# 
+# 
+# # Summarize total counts by Gender and Occupation and Skill
+# skill_occ_gender <- survey_tbl %>%
+#   group_by(GEN, OCC, Skill) %>%
+#   summarize(count = survey_total(vartype = "ci", na.rm = TRUE)) %>%
+#   ungroup()
+# 
+# # Bar chart: x = count, y = Skill
+# ggplot(skill_occ_gender, aes(x = count, y = Skill, fill = GEN)) +
+#   geom_col(position = "dodge") +
+#   facet_wrap(~ OCC, scales = "free_x", ncol = 2) +
+#   scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
+#   labs(
+#     title = "Digital Skill Levels by Occupation and Gender",
+#     x = "No. of Individuals",
+#     y = "Overall Digital Skill Level",
+#     fill = "Gender"
+#   ) +
+#   theme_bw() +
+#   theme(
+#     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+#     strip.text = element_text(size = 10)
+#   )
 
-bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
 
-bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
-                                           levels = c(1:10, 0),
-                                           labels = c("Manager",
-                                                      "Professional",
-                                                      "Technician and associate professional",
-                                                      "Clerical support worker",
-                                                      "Services and sales worker",
-                                                      "Skilled agricultural, forestry and fishery worker",
-                                                      "Craft and related trades worker",
-                                                      "Plant/machine operators and assemblers",
-                                                      "Elementary occupations",
-                                                      "Armed forces",
-                                                      "Blank/Not stated"),
-                                           ordered = FALSE)
-
-
-design_filtered_occ <- subset(design_filtered, !is.na(Skill) & OCC != "Blank/Not stated")
-
-
-install.packages("srvyr")
-
-library(srvyr)
+library(dplyr)
+library(purrr)
 library(ggplot2)
+library(survey)     # For svytotal
+library(srvyr)      # If you're using srvyr-based pipelines
 
-# Convert to srvyr object for tidy syntax
-survey_tbl <- as_survey_design(design_filtered_occ)
+get_skill_OCC_gender <- function(OCC_value, gen_value) {
+  sub <- subset(design_filtered, OCC == OCC_value & GEN == gen_value)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    OCC = OCC_value,
+    GEN = gen_value,
+    measure = names(totals),
+    values = coef(totals)
+  )
+}
 
 
-# Summarize total counts by Gender and Occupation and Skill
-skill_occ_gender <- survey_tbl %>%
-  group_by(GEN, OCC, Skill) %>%
-  summarize(count = survey_total(vartype = "ci", na.rm = TRUE)) %>%
-  ungroup()
+OCC_levels <- levels(design_filtered$variables$OCC)
+gen_levels <- levels(design_filtered$variables$GEN)
 
-# Bar chart: x = count, y = Skill
-ggplot(skill_occ_gender, aes(x = count, y = Skill, fill = GEN)) +
-  geom_col(position = "dodge") +
-  facet_wrap(~ OCC, scales = "free_x", ncol = 2) +
-  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
-  labs(
-    title = "Digital Skill Levels by Occupation and Gender",
-    x = "No. of Individuals",
-    y = "Overall Digital Skill Level",
-    fill = "Gender"
-  ) +
+
+df_OCC_gen <- purrr::cross_df(list(OCC = OCC_levels, GEN = gen_levels)) %>%
+  purrr::pmap_dfr(~ get_skill_OCC_gender(..1, ..2))
+
+g <- df_OCC_gen %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "Below basic",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    # values = formattable::percent(values, 1),
+    measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
+    GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
+    OCC = factor(OCC, levels = OCC_levels, ordered = TRUE),
+    OCC_GEN = interaction(OCC, GEN, sep = " - ")
+  )
+
+
+# plot
+ggplot(g, aes(x = measure, y = values, fill = OCC)) +
+  geom_col(position = position_dodge(width = 0.8)) +
+  geom_text(aes(label = round(values), group = OCC),
+            position = position_dodge(width = 0.8),
+            vjust = -0.2, size = 3) +
+  labs(title = "Overall Digital Skill by Occupation and Gender",
+       x = "Skill Level",
+       y = "No. of Individuals",
+       fill = "Occupation") +
+  facet_wrap(~ GEN) +
   theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-    strip.text = element_text(size = 10)
+    axis.text.x = element_text(angle = 30, hjust = 1),
+    strip.text = element_text(size = 10),
+    legend.position = "bottom"
   )
+
+
+
+
+
 
 
 # ============================================================================ #
