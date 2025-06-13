@@ -793,7 +793,7 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
        fill = "Group") +
   theme_minimal()
 
-# Barplot for skill classes by OCCUPATION
+# Barplot for skill classes by OCCUPATION X GENDER X SKILL LEVEL
 #-------------------------------------------------------------------------------
 # Labeling workforce status categories and variable
 
@@ -826,47 +826,30 @@ library(ggplot2)
 # Convert to srvyr object for tidy syntax
 survey_tbl <- as_survey_design(design_filtered_occ)
 
-# Summarize skill levels by Gender and Occupation
+
+# Summarize total counts by Gender and Occupation and Skill
 skill_occ_gender <- survey_tbl %>%
   group_by(GEN, OCC, Skill) %>%
-  summarize(p = survey_mean(vartype = "ci", na.rm = TRUE)) %>%
+  summarize(count = survey_total(vartype = "ci", na.rm = TRUE)) %>%
   ungroup()
 
-
-ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
+# Bar chart: x = count, y = Skill
+ggplot(skill_occ_gender, aes(x = count, y = Skill, fill = GEN)) +
   geom_col(position = "dodge") +
-  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
+  facet_wrap(~ OCC, scales = "free_x", ncol = 2) +
   scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
   labs(
     title = "Digital Skill Levels by Occupation and Gender",
-    x = "Overall Digital Skill",
-    y = "Percentage",
+    x = "No. of Individuals",
+    y = "Overall Digital Skill Level",
     fill = "Gender"
   ) +
   theme_bw() +
   theme(
     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-    strip.text = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1)
+    strip.text = element_text(size = 10)
   )
 
-# Save plot to a variable called skill_plot
-skill_plot <- ggplot(skill_occ_gender, aes(x = Skill, y = p, fill = GEN)) +
-  geom_col(position = "dodge") +
-  facet_wrap(~ OCC, scales = "free_y", ncol = 2) +
-  scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
-  labs(
-    title = "Digital Skill Levels by Occupation and Gender",
-    x = "Overall Digital Skill",
-    y = "Percentage",
-    fill = "Gender"
-  ) +
-  theme_bw() +
-  theme(
-    plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-    strip.text = element_text(size = 10),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
 
 # ============================================================================ #
 # Barplot for skill levels by age group
