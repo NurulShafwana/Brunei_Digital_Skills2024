@@ -794,10 +794,10 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
 #-------------------------------------------------------------------------------
 #Labeling workforce status categories and variable
 # without blanks/not stated
-bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
-bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
-                                           levels = c(1:10, 0),
-                                           labels = c("Manager",
+bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
+                                           levels = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0),
+                                           labels = c(
+                                                      "Manager",
                                                       "Professional",
                                                       "Technician and associate professional",
                                                       "Clerical support worker",
@@ -811,6 +811,8 @@ bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variabl
                                            ordered = TRUE)
 
 design_filtered <- subset(bruneidesign_ind24, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
+design_filtered$variables$OCC <- droplevels(design_filtered$variables$OCC)
+
 
 # Create skill dummy indicators
 # Reason is because in skills, they're non-numerics
@@ -868,7 +870,7 @@ g %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = OCC),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
@@ -1008,13 +1010,13 @@ g <- bind_rows(df_1, df_2, df_3, df_4) %>%
 #-------------------------------------------------------------------------------
 # Generating barplot
 g %>% 
-  mutate(AGE = forcats::fct_reorder(AGE, values, .desc = F)) %>% 
+  mutate(AGE = forcats::fct_reorder(AGE, values, .desc = T)) %>% 
   ggplot(aes(y = values, 
              fill = AGE,
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = AGE),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
@@ -1074,7 +1076,7 @@ g %>%
   ) %>%
   ggplot(aes(x = measure, y = values, fill = AGE)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
-  geom_label(aes(label = values, group = AGE),
+  geom_label(aes(label = round(values), group = AGE),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
   labs(title = "Overall Skill by Age Group and Gender",
@@ -1159,7 +1161,7 @@ g %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = EDU),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
@@ -1218,7 +1220,7 @@ g %>%
   ) %>%
   ggplot(aes(x = measure, y = values, fill = EDU)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
-  geom_label(aes(label = values, group = EDU),
+  geom_label(aes(label = round(values), group = EDU),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
   labs(title = "Overall Skill by Education levels and Gender",
@@ -1307,7 +1309,7 @@ g %>%
              x = measure
   )) +
   geom_bar(position='dodge', stat='identity')+ 
-  geom_label(aes(label = values,
+  geom_label(aes(label = round(values),
                  group = EMP),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
@@ -1371,7 +1373,7 @@ g %>%
   ) %>%
   ggplot(aes(x = measure, y = values, fill = EMP)) +
   geom_bar(position = position_dodge(width = 0.8), stat = "identity") +
-  geom_label(aes(label = values, group = EMP),
+  geom_label(aes(label = round(values), group = EMP),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
   labs(title = "Overall Skill by Employment status and Gender",
