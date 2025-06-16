@@ -362,8 +362,7 @@ bruneidesign_ind24 <- update(bruneidesign_ind24,
 )
 
 
-
-# Calculate proportions (means) for each
+# Calculate totals for each
 b <- svytotal(~Below_basic_num_CC + Basic_num_CC + Above_basic_num_CC, bruneidesign_ind24)
 
 c <- svytotal(~Below_basic_num_DCC + Basic_num_DCC + Above_basic_num_DCC, bruneidesign_ind24)
@@ -608,11 +607,11 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by GEN
 get_skill_means <- function(gen_value) {
   sub <- subset(design_filtered, GEN == gen_value)
-  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     GEN = gen_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -687,11 +686,11 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by AREA
 get_skill_means <- function(urban_value) {
   sub <- subset(design_filtered, AREA == urban_value)
-  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     AREA = urban_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -739,9 +738,7 @@ g %>%
         legend.position  = 'right')
 
 
-
 #Combining both graphs (Overall Skill x Gender x Area)
-
 design_filtered$variables <- design_filtered$variables %>%
   mutate(
     combo = paste(GEN, AREA, sep = " - "),
@@ -752,11 +749,11 @@ design_filtered$variables <- design_filtered$variables %>%
 
 get_combo_means <- function(group_label) {
   sub <- subset(design_filtered, combo == group_label)
-  means <- svytotal(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     combo = group_label,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -768,13 +765,11 @@ combo_data <- purrr::map_dfr(combo_levels, get_combo_means) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    percent_label = scales::percent(values, accuracy = 1),
     measure = factor(measure,
-                     levels = c("Below basic",
-                                "Basic",
-                                "Above basic"),
+                     levels = c("Below basic", "Basic", "Above basic"),
                      ordered = TRUE)
   )
+
 
 ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
   geom_col(position = "dodge") +
@@ -798,10 +793,9 @@ ggplot(combo_data, aes(x = measure, y = values, fill = combo)) +
 #Barplot for skill classes by OCCUPATION X GENDER X SKILL LEVEL
 #-------------------------------------------------------------------------------
 #Labeling workforce status categories and variable
-# 
+# without blanks/not stated
 bruneidesign_ind24$variables$OCC <- haven::as_factor(bruneidesign_ind24$variables$OCC)
-
-bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
+bruneidesign_ind24$variables$OCC <- factor(as.numeric(bruneidesign_ind24$variables$OCC),
                                            levels = c(1:10, 0),
                                            labels = c("Manager",
                                                       "Professional",
@@ -816,50 +810,89 @@ bruneidesign_ind24$variables$OCC <- factor(bruneidesign_ind24$variables$OCC,
                                                       "Blank/Not stated"),
                                            ordered = TRUE)
 
+design_filtered <- subset(bruneidesign_ind24, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
 
-design_filtered_occ <- subset(design_filtered, !is.na(Skill) & as.character(OCC) != "Blank/Not stated")
-# 
-# 
-# install.packages("srvyr")
-# 
-# library(srvyr)
-# library(ggplot2)
-# 
-# # Convert to srvyr object for tidy syntax
-# survey_tbl <- as_survey_design(design_filtered_occ)
-# 
-# 
-# # Summarize total counts by Gender and Occupation and Skill
-# skill_occ_gender <- survey_tbl %>%
-#   group_by(GEN, OCC, Skill) %>%
-#   summarize(count = survey_total(vartype = "ci", na.rm = TRUE)) %>%
-#   ungroup()
-# 
-# # Bar chart: x = count, y = Skill
-# ggplot(skill_occ_gender, aes(x = count, y = Skill, fill = GEN)) +
-#   geom_col(position = "dodge") +
-#   facet_wrap(~ OCC, scales = "free_x", ncol = 2) +
-#   scale_fill_manual(values = c("MALE" = "#C7DBFF", "FEMALE" = "#FFB6C1")) +
-#   labs(
-#     title = "Digital Skill Levels by Occupation and Gender",
-#     x = "No. of Individuals",
-#     y = "Overall Digital Skill Level",
-#     fill = "Gender"
-#   ) +
-#   theme_bw() +
-#   theme(
-#     plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
-#     strip.text = element_text(size = 10)
-#   )
+# Create skill dummy indicators
+# Reason is because in skills, they're non-numerics
+design_filtered$variables <- design_filtered$variables %>%
+  mutate(
+    skill_below  = if_else(Skill == "Below basic", 1, 0),
+    skill_basic = if_else(Skill == "Basic", 1, 0),
+    skill_above = if_else(Skill == "Above basic", 1, 0)
+  )
 
+# Compute skill means by occupation
+# Function to compute skill means by education level
+get_skill_OCC <- function(OCC_value) {
+  sub <- subset(design_filtered, OCC == OCC_value)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
+  data.frame(
+    OCC = OCC_value,
+    measure = names(totals),
+    values = coef(totals)
+  )
+}
+  
+# Apply to all occupations
+df_1 <- get_skill_OCC("Manager")
+df_2 <- get_skill_OCC("Professional")
+df_3 <- get_skill_OCC("Technician and associate professional")
+df_4 <- get_skill_OCC("Clerical support worker")
+df_5 <- get_skill_OCC("Services and sales worker")
+df_6 <- get_skill_OCC("Skilled agricultural, forestry and fishery worker")
+df_7 <- get_skill_OCC("Craft and related trades worker")
+df_8 <- get_skill_OCC("Plant/machine operators and assemblers")
+df_9 <- get_skill_OCC("Elementary occupations")
+df_10 <- get_skill_OCC("Armed forces")
 
-library(dplyr)
-library(purrr)
-library(ggplot2)
-library(survey)     # For svytotal
-library(srvyr)      # If you're using srvyr-based pipelines
+# Combine and clean
+g <- bind_rows(df_1, df_2, df_3, df_4, df_5, df_6, df_7, df_8, df_9, df_10) %>%
+  mutate(
+    measure = case_when(
+      measure == "skill_below" ~ "Below basic",
+      measure == "skill_basic" ~ "Basic",
+      measure == "skill_above" ~ "Above basic"
+    ),
+    measure = factor(measure,
+                     levels = c("Below basic",
+                                "Basic",
+                                "Above basic"),
+                     ordered = TRUE)
+  )
 
-get_skill_OCC_gender <- function(OCC_value, gen_value) {
+# Generating barplot
+g %>% 
+  mutate(OCC = forcats::fct_reorder(OCC, values, .desc = T)) %>% 
+  ggplot(aes(y = values, 
+             fill = OCC,
+             x = measure
+  )) +
+  geom_bar(position='dodge', stat='identity')+ 
+  geom_label(aes(label = values,
+                 group = OCC),
+             fill = "white", colour = "black", 
+             position= position_dodge(width = .9)) +
+  labs(title = 'Overall Skill x Workforce status',
+       x = 'Overall Skill',
+       y = 'Distribution (%)',
+       fill = 'Workforce status') +
+  scale_fill_manual(values = c("Manager" = "blue", 
+                               "Professional" = "red",
+                               "Technician and associate professional" = "yellow",
+                               "Clerical support worker" = "green",
+                               "Services and sales worker" = "pink",
+                               "Skilled agricultural, forestry and fishery worker" = "black",
+                               "Craft and related trades worker" = "orange",
+                               "Plant/machine operators and assemblers" = "gray",
+                               "Elementary occupations" = "brown",
+                               "Armed forces" = "purple")) +  
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold", size = 14),
+        strip.background = element_rect(fill = 'white'),
+        legend.position  = 'right')
+
+# combining occ and gender
+get_skill_OCC_GEN <- function(OCC_value, gen_value) {
   sub <- subset(design_filtered, OCC == OCC_value & GEN == gen_value)
   totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
@@ -870,17 +903,11 @@ get_skill_OCC_gender <- function(OCC_value, gen_value) {
   )
 }
 
-
-# OCC_levels <- levels(design_filtered$variables$OCC)
-# gen_levels <- levels(design_filtered$variables$GEN)
-
-OCC_levels <- unique(design_filtered$variables$OCC)
-GEN_levels <- unique(design_filtered$variables$GEN)
-
-
+OCC_levels <- levels(design_filtered$variables$OCC)
+gen_levels <- levels(design_filtered$variables$GEN)
 
 df_OCC_gen <- purrr::cross_df(list(OCC = OCC_levels, GEN = gen_levels)) %>%
-  purrr::pmap_dfr(~ get_skill_OCC_gender(..1, ..2))
+  purrr::pmap_dfr(~ get_skill_OCC_GEN(..1, ..2))
 
 g <- df_OCC_gen %>%
   mutate(
@@ -889,13 +916,11 @@ g <- df_OCC_gen %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    # values = formattable::percent(values, 1),
     measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     OCC = factor(OCC, levels = OCC_levels, ordered = TRUE),
     OCC_GEN = interaction(OCC, GEN, sep = " - ")
   )
-
 
 # plot
 ggplot(g, aes(x = measure, y = values, fill = OCC)) +
@@ -951,11 +976,11 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by age
 get_skill_means <- function(age_value) {
   sub <- subset(design_filtered, AGE == age_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     AGE = age_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -973,7 +998,6 @@ g <- bind_rows(df_1, df_2, df_3, df_4) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure,
                      levels = c("Below basic",
                                 "Basic",
@@ -994,7 +1018,6 @@ g %>%
                  group = AGE),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = 'Overall Skill x Age Group',
        x = 'Overall Skill',
        y = 'Distribution (%)',
@@ -1016,12 +1039,12 @@ g %>%
 # Compute skill means by age group by gender
 get_skill_means_age_gender <- function(age_value, gen_value) {
   sub <- subset(design_filtered, AGE == age_value & GEN == gen_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     AGE = age_value,
     GEN = gen_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -1038,7 +1061,6 @@ g <- df_age_gen %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     AGE = factor(AGE, levels = age_levels, ordered = TRUE),
@@ -1055,7 +1077,6 @@ g %>%
   geom_label(aes(label = values, group = AGE),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = "Overall Skill by Age Group and Gender",
        x = "Overall Skill",
        y = "Distribution (%)",
@@ -1100,11 +1121,11 @@ design_filtered$variables <- design_filtered$variables %>%
 # Function to compute skill means by education level
 get_skill_means <- function(edu_value) {
   sub <- subset(design_filtered, EDU == edu_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     EDU = edu_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -1122,7 +1143,6 @@ g <- bind_rows(df_1, df_2, df_3, df_4) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure,
                      levels = c("Below basic",
                                 "Basic",
@@ -1143,7 +1163,6 @@ g %>%
                  group = EDU),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = 'Overall Skill x Education Levels',
        x = 'Overall Skill',
        y = 'Distribution (%)',
@@ -1161,12 +1180,12 @@ g %>%
 # Part 2 - combining overall skill x genders and overall skill x education level
 get_skill_means_edu_gender <- function(edu_value, gen_value) {
   sub <- subset(design_filtered, EDU == edu_value & GEN == gen_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     EDU = edu_value,
     GEN = gen_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -1183,7 +1202,6 @@ g <- df_edu_gen %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     EDU = factor(EDU, levels = edu_levels, ordered = TRUE),
@@ -1203,7 +1221,6 @@ g %>%
   geom_label(aes(label = values, group = EDU),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = "Overall Skill by Education levels and Gender",
        x = "Overall Skill",
        y = "Distribution (%)",
@@ -1246,15 +1263,15 @@ design_filtered$variables <- design_filtered$variables %>%
     skill_basic = if_else(Skill == "Basic", 1, 0),
     skill_above = if_else(Skill == "Above basic", 1, 0)
   )
-# Compute skill means by age education level
+# Compute skill totals by age education level
 # Function to compute skill means by education level
 get_skill_means <- function(emp_value) {
   sub <- subset(design_filtered, EMP == emp_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     EMP = emp_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -1274,7 +1291,6 @@ g <- bind_rows(df_1, df_2, df_3, df_4, df_5, df_0) %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure,
                      levels = c("Below basic",
                                 "Basic",
@@ -1295,7 +1311,6 @@ g %>%
                  group = EMP),
              fill = "white", colour = "black", 
              position= position_dodge(width = .9)) +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = 'Overall Skill x Employment status',
        x = 'Overall Skill',
        y = 'Distribution (%)',
@@ -1315,12 +1330,12 @@ g %>%
 # Part 2 - combining overall skill x genders and overall skill x education level
 get_skill_means_emp_gender <- function(emp_value, gen_value) {
   sub <- subset(design_filtered, EMP == emp_value & GEN == gen_value)
-  means <- svymean(~skill_below + skill_basic + skill_above, sub)
+  totals <- svytotal(~skill_below + skill_basic + skill_above, sub)
   data.frame(
     EMP = emp_value,
     GEN = gen_value,
-    measure = names(means),
-    values = coef(means)
+    measure = names(totals),
+    values = coef(totals)
   )
 }
 
@@ -1337,12 +1352,12 @@ g <- df_emp_gen %>%
       measure == "skill_basic" ~ "Basic",
       measure == "skill_above" ~ "Above basic"
     ),
-    values = formattable::percent(values, 1),
     measure = factor(measure, levels = c("Below basic", "Basic", "Above basic"), ordered = TRUE),
     GEN = factor(GEN, levels = gen_levels, ordered = TRUE),
     EMP = factor(EMP, levels = emp_levels, ordered = TRUE),
     EMP_GEN = interaction(EMP, GEN, sep = " - ")
   )
+
 # plot
 g %>%
   mutate(
@@ -1359,7 +1374,6 @@ g %>%
   geom_label(aes(label = values, group = EMP),
              position = position_dodge(width = 0.8),
              fill = "white", colour = "black") +
-  scale_y_continuous(labels = scales::percent) +
   labs(title = "Overall Skill by Employment status and Gender",
        x = "Overall Skill",
        y = "Distribution (%)",
